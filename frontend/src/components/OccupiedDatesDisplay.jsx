@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./OccupiedDatesDisplay.css";
-import { UserContext } from "./UserContext";
 
 const OccupiedDatesDisplay = () => {
   const [groupedDates, setGroupedDates] = useState({});
-  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    console.log(user);
-    if (!user) {
-      return;
-    }
 
     const baseURL = "https://booking-app-backend-4vb9.onrender.com";
     async function fetchDates() {
@@ -19,14 +13,12 @@ const OccupiedDatesDisplay = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Token ${user.token}`,
           },
         });
 
         if (!response.ok) {
           throw new Error("Fetch failed");
         }
-        console.log(user.token);
         const data = await response.json(); // Parse the JSON response
         console.log(data);
         return data;
@@ -106,7 +98,7 @@ const OccupiedDatesDisplay = () => {
     }
 
     processAndSetDates(); // Fetch and process dates
-  }, [user]); // Re-run when `user` changes
+  }, []); // Re-run when `user` changes
 
   return (
     <div className="occupied-dates-container">

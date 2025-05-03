@@ -91,14 +91,6 @@ const router = createBrowserRouter([
         element: <AllRooms></AllRooms>,
       },
       {
-        path: "/auth",
-        element: (
-          <GuestRoute>
-            <AuthForm></AuthForm>
-          </GuestRoute>
-        ),
-      },
-      {
         path: "/my-bookings",
         element: <OccupiedDatesDisplay></OccupiedDatesDisplay>,
       },
@@ -107,8 +99,6 @@ const router = createBrowserRouter([
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <UserProvider>
       <RouterProvider router={router} />
-    </UserProvider>
   </StrictMode>
 );
