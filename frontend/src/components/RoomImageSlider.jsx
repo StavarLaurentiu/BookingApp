@@ -19,7 +19,7 @@ const RoomImageSlider = ({ images }) => {
     <div className="image-slider">
       <button onClick={handlePrev}>&#10094;</button>
       <img
-        src={images[currentIndex].image}
+        src={images[currentIndex]}
         alt="Room"
         className="slider-image"
       />
