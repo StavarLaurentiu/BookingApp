@@ -90,10 +90,6 @@ const router = createBrowserRouter([
         path: "/all-rooms",
         element: <AllRooms></AllRooms>,
       },
-      {
-        path: "/my-bookings",
-        element: <OccupiedDatesDisplay></OccupiedDatesDisplay>,
-      },
     ],
   },
 ]);
