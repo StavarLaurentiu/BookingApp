@@ -1,6 +1,5 @@
 import React from "react";
 import "./AllRooms.css";
-import RoomCard from "./RoomDetails/RoomCard";
 import { useState, useEffect } from "react";
 import deluxe1 from "../assets/images/deluxe1.jpg";
 import deluxe2 from "../assets/images/deluxe2.jpg";
@@ -9,6 +8,7 @@ import family_suite2 from "../assets/images/family_suite2.webp";
 import family_suite3 from "../assets/images/family_suite3.jpg";
 import standard1 from "../assets/images/standard1.jpg";
 import standard2 from "../assets/images/standard2.webp";
+import RoomCard from "./RoomCard";
 
 
 const AllRooms = () => {

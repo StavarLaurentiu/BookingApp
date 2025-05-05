@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-import RoomCard from "./RoomDetails/RoomCard";
+import RoomCard from "./RoomCard";
 import "./BookingComponent.css";
 
-import deluxe1 from "../assets/images/deluxe1.jpg";
+import deluxe1 from '../assets/images/deluxe1.jpg';
 import deluxe2 from "../assets/images/deluxe2.jpg";
 import family_suite1 from "../assets/images/family_suite1.jpg";
 import family_suite2 from "../assets/images/family_suite2.webp";

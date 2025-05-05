@@ -9,18 +9,27 @@
   width: 100%;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-logo {
+  width: 25px;
+  height: auto;
+}
+
 .navbar h1 {
   margin: 0;
 }
 
 .navbar ul {
-  margin: 0;
-  padding: 0;
-}
-.navbar ul {
   list-style: none;
   display: flex;
   gap: 1rem;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar ul li a {
@@ -30,9 +39,4 @@
 
 .navbar ul li a:hover {
   text-decoration: underline;
-}
-
-.logout:hover {
-  text-decoration: underline;
-  cursor: pointer;
 }

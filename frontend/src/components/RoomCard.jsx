@@ -3,7 +3,6 @@ import RoomImageSlider from "./RoomImageSlider";
 import RoomInfo from "./Roominfo";
 
 import "./RoomDetails.css";
-import { UserContext } from "../UserContext";
 import { redirect, useNavigate } from "react-router-dom";
 
 const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
@@ -56,6 +55,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       }
     }
   };
+
   return (
     <div className="room-card">
       <RoomImageSlider images={room.images} />
