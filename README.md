@@ -1,4 +1,4 @@
-# Further Improvements for Frontent
+# Further Improvements for Frontend
 
 1. Maybe change the collor scheme
 2. Add "Hotel" field for RoomCard
@@ -7,3 +7,4 @@
 5. Make a burger for Mobile.
 6. Add one more type of Room.
 7. Add a popup when the user selects to book a room, where he can enter his details and confirm that he wants to book a room.
+8. Make the sliding of the images smooth.
