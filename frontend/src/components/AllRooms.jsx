@@ -10,12 +10,12 @@ import standard1 from "../assets/images/standard1.jpg";
 import standard2 from "../assets/images/standard2.webp";
 import RoomCard from "./RoomCard";
 
-
 const AllRooms = () => {
   const [roomData, setRoomData] = useState([]);
   
-
-
+  // Dummy data for roomData
+  // This data should be replaced with the actual data fetched from the backend
+  // or from a local JSON file.
   let roomDataDummy = [
     {
       roomId: "101",
@@ -99,6 +99,7 @@ const AllRooms = () => {
     // fetchRoomData();
     setRoomData(roomDataDummy)
   }, []);
+  
   return (
     <div className="all-rooms-container">
       <h2>All Rooms</h2>

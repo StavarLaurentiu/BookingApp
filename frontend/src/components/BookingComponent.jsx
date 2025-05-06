@@ -12,7 +12,7 @@ import family_suite3 from "../assets/images/family_suite3.jpg";
 import standard1 from "../assets/images/standard1.jpg";
 import standard2 from "../assets/images/standard2.webp";
 
-const BookingComponent = ({ currentUser }) => {
+const BookingComponent = () => {
   const [selectedDates, setSelectedDates] = useState({
     startDate: null,
     endDate: null,
@@ -22,11 +22,11 @@ const BookingComponent = ({ currentUser }) => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [loggedInUser, setLoggedInUser] = useState(currentUser);
-
   const [roomData, setRoomData] = useState([]);
 
-
+  // Dummy data for roomData
+  // This data should be replaced with the actual data fetched from the backend
+  // or from a local JSON file.
   let roomDataDummy = [
   {
     roomId: "101",
@@ -250,6 +250,14 @@ const BookingComponent = ({ currentUser }) => {
         </button>
       </div>
 
+      <div className="calendar-day-labels">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+              <div key={index} className="day-label">
+                {day}
+              </div>
+            ))}
+      </div>
+
       <div className="calendar-days">
         {days.map(({ day, monthOffset }, index) => (
           <div
@@ -296,7 +304,7 @@ const BookingComponent = ({ currentUser }) => {
         ) : success != "" ? (
           <p>{success}</p>
         ) : error != "" ? (
-          <p>{error}</p>
+          null
         ) : (
           <p>Please select a date for booking.</p>
         )}
