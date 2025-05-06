@@ -5,14 +5,14 @@
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   background-color: var(--surface);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .room-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--hover-shadow);
 }
 
 .image-slider {
@@ -88,7 +88,6 @@
   line-height: 1.5;
 }
 
-/* Room features */
 .room-features {
   display: flex;
   flex-wrap: wrap;
@@ -126,6 +125,13 @@
 .currency {
   font-size: 1rem;
   margin-right: 0.3rem;
+}
+
+.booking-details {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  background-color: rgba(var(--primary-rgb), 0.1);
+  border-radius: 4px;
 }
 
 .book-room-button {

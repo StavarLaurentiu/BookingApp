@@ -1,11 +1,12 @@
 .booking-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0 auto 2rem;
   padding: 2rem 1rem;
   background-color: var(--surface);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
   text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .booking-container h1 {
@@ -44,7 +45,6 @@
   background-color: var(--primary);
 }
 
-/* Add day labels */
 .calendar-day-labels {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -65,8 +65,8 @@
 }
 
 .calendar-day {
-  background: var(--surface);
-  color: var(--text-primary);
+  background: var(--calendar-day-bg);
+  color: var(--calendar-day-text);
   padding: 10px;
   cursor: pointer;
   border-radius: 5px;
@@ -75,24 +75,26 @@
 }
 
 .calendar-day:hover {
-  background: var(--primary-light);
-  color: var(--text-on-primary);
+  background: var(--calendar-day-hover);
+  border-color: var(--primary-light);
 }
 
 .calendar-day.selected {
   background: var(--primary);
   color: var(--text-on-primary);
   font-weight: bold;
+  border-color: var(--primary);
 }
 
 .calendar-day.overflow {
   color: var(--text-secondary);
-  background: #f0f0f0;
-  opacity: 0.7;
+  background: var(--calendar-day-bg);
+  opacity: 0.6;
 }
 
 .calendar-day.overflow.selected {
   background: var(--primary-light);
+  opacity: 0.8;
 }
 
 .date-range-display {
@@ -119,18 +121,18 @@
   border-radius: 5px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .book-rooms-button:hover {
   background-color: var(--secondary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .error-message {
   color: var(--error);
-  background-color: rgba(211, 47, 47, 0.1);
+  background-color: rgba(var(--error-rgb), 0.1);
   padding: 10px;
   border-radius: 4px;
   margin: 10px auto;
@@ -140,7 +142,7 @@
 
 .success-message {
   color: var(--success);
-  background-color: rgba(67, 160, 71, 0.1);
+  background-color: rgba(var(--success-rgb), 0.1);
   padding: 10px;
   border-radius: 4px;
   margin: 10px auto;

@@ -1,6 +1,12 @@
 .all-rooms-container {
   padding: 1rem;
   text-align: center;
+  color: var(--text-primary);
+}
+
+.all-rooms-container h2 {
+  margin-bottom: 2rem;
+  color: var(--text-primary);
 }
 
 .rooms-list {

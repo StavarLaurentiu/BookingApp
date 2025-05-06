@@ -1,3 +1,4 @@
+/* src/components/Navbar.css */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -5,8 +6,10 @@
   background-color: var(--primary);
   padding: 1rem 2rem;
   color: var(--text-on-primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 3rem;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 .navbar-left {
@@ -28,7 +31,7 @@
   font-size: 1.5rem;
 }
 
-.navbar ul {
+.navbar-center {
   list-style: none;
   display: flex;
   gap: 2rem;
@@ -36,7 +39,7 @@
   padding: 0;
 }
 
-.navbar ul li a {
+.navbar-center li a {
   color: var(--text-on-primary);
   text-decoration: none;
   font-weight: 500;
@@ -44,7 +47,7 @@
   padding: 0.5rem 0;
 }
 
-.navbar ul li a::after {
+.navbar-center li a::after {
   content: '';
   position: absolute;
   width: 0;
@@ -55,20 +58,47 @@
   transition: width 0.3s ease;
 }
 
-.navbar ul li a:hover::after {
+.navbar-center li a:hover::after {
   width: 100%;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-on-primary);
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(15deg);
 }
 
 @media (max-width: 768px) {
   .navbar {
     padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .navbar-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+    gap: 1rem;
   }
   
   .navbar h1 {
     font-size: 1.2rem;
-  }
-  
-  .navbar ul {
-    gap: 1rem;
   }
 }
