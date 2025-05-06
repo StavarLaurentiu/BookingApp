@@ -108,7 +108,7 @@
   color: var(--primary);
 }
 
-.book-rooms-button {
+.search-available-rooms-button {
   margin: 1.5rem auto;
   background: var(--secondary);
   color: var(--text-on-primary);
@@ -124,7 +124,7 @@
   transition: all 0.3s ease-in-out;
 }
 
-.book-rooms-button:hover {
+.search-available-rooms-button:hover {
   background-color: var(--secondary-dark);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);

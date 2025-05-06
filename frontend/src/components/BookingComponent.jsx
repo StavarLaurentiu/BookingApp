@@ -272,8 +272,8 @@ const BookingComponent = () => {
         ))}
       </div>
 
-      <button className="book-rooms-button" onClick={handleFilterRooms}>
-        Book Rooms
+      <button className="search-available-rooms-button" onClick={handleFilterRooms}>
+        Search Available Rooms
       </button>
 
       {error && <div className="error-message">{error}</div>}
