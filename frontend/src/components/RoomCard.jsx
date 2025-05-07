@@ -1,6 +1,6 @@
 import React from "react";
 import RoomImageSlider from "./RoomImageSlider";
-import { FaUsers, FaWifi, FaBed, FaThermometerHalf, FaTv, FaShower, FaCoffee } from "react-icons/fa";
+import { FaUsers, FaWifi, FaBed, FaThermometerHalf, FaTv, FaShower, FaCoffee, FaHotel } from "react-icons/fa";
 import "./RoomDetails.css";
 
 const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
@@ -41,6 +41,13 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         { icon: <FaBed />, name: "King Size Bed" },
         { icon: <FaShower />, name: "Rainfall Shower" },
         { icon: <FaCoffee />, name: "Coffee Machine" }
+      ];
+    } else if (room.roomType === "Luxury") {
+      return [
+        ...baseFeatures,
+        { icon: <FaBed />, name: "Super King Bed" },
+        { icon: <FaShower />, name: "Jacuzzi" },
+        { icon: <FaCoffee />, name: "Premium Mini Bar" }
       ];
     } else {
       return [
@@ -96,6 +103,10 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       <RoomImageSlider images={room.images} />
       <div className="room-info">
         <h2>{room.roomName}</h2>
+        <div className="hotel-info">
+          <FaHotel /> <span>{room.hotel || "Grand Plaza Hotel"}</span>
+        </div>
+        
         <p>
           <strong>Type:</strong> {room.roomType}
         </p>
