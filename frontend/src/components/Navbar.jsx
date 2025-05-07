@@ -1,13 +1,21 @@
-// src/components/Navbar.jsx
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa";
 import { ThemeContext } from "../contexts/ThemeContext";
 import "./Navbar.css";
 import logo from '../../public/logo.jpeg';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   return (
     <nav className="navbar">
@@ -16,12 +24,16 @@ const Navbar = () => {
         <h1>Hotel Booking</h1>
       </div>
       
-      <ul className="navbar-center">
+      <div className="navbar-mobile-toggle" onClick={toggleMenu}>
+        {menuOpen ? <FaTimes /> : <FaBars />}
+      </div>
+      
+      <ul className={`navbar-center ${menuOpen ? 'active' : ''}`}>
         <li>
-          <Link to="">Home</Link>
+          <Link to="" onClick={closeMenu}>Home</Link>
         </li>
         <li>
-          <Link to="all-rooms">All Rooms</Link>
+          <Link to="all-rooms" onClick={closeMenu}>All Rooms</Link>
         </li>
       </ul>
       

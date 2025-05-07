@@ -21,6 +21,7 @@ const AllRooms = () => {
       roomId: "101",
       roomName: "Deluxe Suite",
       roomType: "Suite",
+      hotel: "Grand Plaza Hotel",
       isOccupied: true,
       occupiedDates: [
         {
@@ -41,6 +42,7 @@ const AllRooms = () => {
       roomId: "102",
       roomName: "Standard Room",
       roomType: "Standard",
+      hotel: "Grand Plaza Hotel",
       isOccupied: false,
       occupiedDates: [],
       pricePerNight: 100,
@@ -54,6 +56,7 @@ const AllRooms = () => {
       roomId: "201",
       roomName: "Family Suite",
       roomType: "Suite",
+      hotel: "Riverside Resort",
       isOccupied: false,
       occupiedDates: [
         {
@@ -71,6 +74,20 @@ const AllRooms = () => {
       images: [family_suite1, family_suite2, family_suite3],
       description:
         "Perfect for families, with spacious living and a kitchenette.",
+    },
+    {
+      roomId: "301",
+      roomName: "Luxury Penthouse",
+      roomType: "Luxury",
+      hotel: "Skyview Towers",
+      isOccupied: false,
+      occupiedDates: [],
+      pricePerNight: 350,
+      currency: "USD",
+      maxOccupancy: 2,
+      images: [deluxe1, deluxe2], // Reusing images for demo purposes
+      description:
+        "An exclusive penthouse with panoramic views, jacuzzi, and premium amenities for the discerning traveler.",
     },
   ];
 
@@ -105,7 +122,7 @@ const AllRooms = () => {
       <h2>All Rooms</h2>
       <div className="rooms-list">
         {roomData.map((room) => (
-          <RoomCard key={room.id} room={room} />
+          <RoomCard key={room.id || room.roomId} room={room} />
         ))}
       </div>
     </div>

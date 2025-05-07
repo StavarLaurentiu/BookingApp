@@ -5,7 +5,7 @@
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  background-color: var(--surface);
+  background-color: var(--surface-dimmed);
   box-shadow: var(--card-shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
@@ -71,9 +71,25 @@
 }
 
 .room-info h2 {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary);
   font-size: 1.5rem;
+  text-align: center;
+}
+
+.hotel-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  font-weight: 500;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.hotel-info svg {
+  font-size: 1.2rem;
 }
 
 .room-info p {

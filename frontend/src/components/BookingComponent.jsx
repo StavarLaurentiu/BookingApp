@@ -32,6 +32,7 @@ const BookingComponent = () => {
     roomId: "101",
     roomName: "Deluxe Suite",
     roomType: "Suite",
+    hotel: "Grand Plaza Hotel",
     isOccupied: true,
     occupiedDates: [
       {
@@ -43,7 +44,6 @@ const BookingComponent = () => {
     ],
     pricePerNight: 150,
     currency: "USD",
-
     maxOccupancy: 2,
     images: [deluxe1, deluxe2],
     description: "A spacious suite with a beautiful view.",
@@ -52,11 +52,11 @@ const BookingComponent = () => {
     roomId: "102",
     roomName: "Standard Room",
     roomType: "Standard",
+    hotel: "Grand Plaza Hotel",
     isOccupied: false,
     occupiedDates: [],
     pricePerNight: 100,
     currency: "USD",
-
     maxOccupancy: 2,
     images: [standard1, standard2],
     description: "A cozy room ideal for single travelers or couples.",
@@ -65,6 +65,7 @@ const BookingComponent = () => {
     roomId: "201",
     roomName: "Family Suite",
     roomType: "Suite",
+    hotel: "Riverside Resort",
     isOccupied: false,
     occupiedDates: [
       {
@@ -82,6 +83,20 @@ const BookingComponent = () => {
     images: [family_suite1, family_suite2, family_suite3],
     description:
       "Perfect for families, with spacious living and a kitchenette.",
+  },
+  {
+    roomId: "301",
+    roomName: "Luxury Penthouse",
+    roomType: "Luxury",
+    hotel: "Skyview Towers",
+    isOccupied: false,
+    occupiedDates: [],
+    pricePerNight: 350,
+    currency: "USD",
+    maxOccupancy: 2,
+    images: [deluxe1, deluxe2], // Reusing images for demo purposes
+    description:
+      "An exclusive penthouse with panoramic views, jacuzzi, and premium amenities for the discerning traveler.",
   },
 ];
 
@@ -294,7 +309,7 @@ const BookingComponent = () => {
                   setError("");
                 }, 5000);
               }}
-              key={room.id}
+              key={room.id || room.roomId}
               room={room}
               selectedDateRange={selectedDates}
             />
