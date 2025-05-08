@@ -14,6 +14,47 @@
   color: var(--text-primary);
 }
 
+.hotel-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.hotel-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.hotel-dropdown {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--divider);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 1rem;
+  width: auto;
+  min-width: 180px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 1em;
+}
+
+.hotel-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+}
+
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -159,4 +200,24 @@
   color: var(--text-secondary);
   font-style: italic;
   margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .hotel-selector {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .hotel-dropdown {
+    width: 100%;
+  }
+  
+  .calendar-day {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .calendar-header h2 {
+    font-size: 1.2rem;
+  }
 }
