@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import RoomImageSlider from "./RoomImageSlider";
+import BookingPopup from "./BookingPopup";
 import { FaUsers, FaWifi, FaBed, FaThermometerHalf, FaTv, FaShower, FaCoffee, FaHotel } from "react-icons/fa";
 import "./RoomDetails.css";
 
 const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
+  const [showBookingPopup, setShowBookingPopup] = useState(false);
+  
   // Calculate nights and total price
   const calculateBookingDetails = () => {
     if (!selectedDateRange || !selectedDateRange.startDate) {
@@ -57,18 +60,29 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
     }
   };
 
-  const handleBooking = async (roomId, selectedDateRange) => {
+  // Handle opening the booking popup
+  const handleOpenBookingPopup = () => {
+    setShowBookingPopup(true);
+  };
+  
+  // Handle closing the booking popup
+  const handleCloseBookingPopup = () => {
+    setShowBookingPopup(false);
+  };
+  
+  // Handle confirming the booking
+  const handleConfirmBooking = async (bookingData) => {
     const baseURL = "https://booking-app-backend-4vb9.onrender.com";
-    const roomUrl = `${baseURL}/rooms/${roomId}/`;
+    const roomUrl = `${baseURL}/rooms/${room.id || room.roomId}/`;
 
-    if (selectedDateRange.startDate && !selectedDateRange.endDate) {
-      selectedDateRange.endDate = selectedDateRange.startDate;
-    }
-    
     try {
+      // Create date range from the booking data
+      const startDate = new Date(bookingData.dateRange.startDate);
+      const endDate = new Date(bookingData.dateRange.endDate);
+      
       for (
-        let currentDate = new Date(selectedDateRange.startDate);
-        currentDate <= new Date(selectedDateRange.endDate);
+        let currentDate = new Date(startDate);
+        currentDate <= endDate;
         currentDate.setDate(currentDate.getDate() + 1)
       ) {
         const response = await fetch(`${baseURL}/occupied-dates/`, {
@@ -83,6 +97,12 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
               .replace(/\./g, "-")
               .replace(/\s+/g, "")
               .slice(0, -1),
+            // Add guest info from form
+            occupierInfo: {
+              name: bookingData.name,
+              contact: bookingData.email,
+              phone: bookingData.phone
+            }
           }),
         });
         
@@ -91,10 +111,18 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         }
       }
       
-      onBookingSuccess();
-      console.log("Booking successful for all selected dates");
+      // Close popup and notify success
+      setShowBookingPopup(false);
+      
+      // Call the parent component's success handler
+      if (onBookingSuccess) {
+        onBookingSuccess();
+      }
+      
+      console.log("Booking successful for all selected dates with guest info:", bookingData);
     } catch (error) {
       console.error("Error during booking:", error);
+      // Here you could show an error message to the user
     }
   };
 
@@ -142,12 +170,21 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         <div className="booking-action">
           <button
             className="book-room-button"
-            onClick={() => handleBooking(room.id || room.roomId, selectedDateRange)}
+            onClick={handleOpenBookingPopup}
             disabled={!selectedDateRange.startDate}
           >
             {selectedDateRange.startDate ? `Book for ${room.currency} ${totalPrice}` : 'Select dates to book'}
           </button>
         </div>
+      )}
+      
+      {showBookingPopup && (
+        <BookingPopup
+          room={room}
+          selectedDateRange={selectedDateRange}
+          onClose={handleCloseBookingPopup}
+          onConfirm={handleConfirmBooking}
+        />
       )}
     </div>
   );
