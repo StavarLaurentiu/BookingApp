@@ -1,4 +1,11 @@
-# Further Improvements for Frontend
+# Further Improvements
 
-3. Add "Select Hotel" dropdown in BookingComponent's calendar.
-7. Add a popup when the user selects to book a room, where he can enter his details and confirm that he wants to book a room.
+## For Backend
+
+1. Once you get the full description on what API's start working on them.
+
+## For Frontend
+
+1. Write a full description on what API's we need from the backend.
+2. Once the backend is complete, delete the dummy data and replace it with data fetched from the backend.
+3. Look over the code and delete dead code.

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import './BookingPopup.css';
 import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaCreditCard } from 'react-icons/fa';
 
@@ -13,6 +14,16 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalRoot] = useState(() => {
+    // Create a div for the portal if it doesn't exist
+    let element = document.getElementById("booking-popup-root");
+    if (!element) {
+      element = document.createElement("div");
+      element.id = "booking-popup-root";
+      document.body.appendChild(element);
+    }
+    return element;
+  });
 
   // Add scroll lock when component mounts
   useEffect(() => {
@@ -28,10 +39,10 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
     };
   }, []);
 
-  // Handle clicks outside the modal (optional)
+  // Handle clicks outside the modal
   const handleOverlayClick = (e) => {
     // Only close if clicking the overlay itself, not the modal content
-    if (e.target === e.currentTarget) {
+    if (e.target.classList.contains('booking-popup-overlay')) {
       onClose();
     }
   };
@@ -140,9 +151,10 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
     };
   }, [onClose]);
 
-  return (
+  // Create the popup content
+  const popupContent = (
     <div className="booking-popup-overlay" onClick={handleOverlayClick}>
-      <div className="booking-popup" onClick={e => e.stopPropagation()}>
+      <div className="booking-popup">
         <button className="close-button" onClick={onClose}>
           <FaTimes />
         </button>
@@ -299,6 +311,9 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
       </div>
     </div>
   );
+
+  // Use createPortal to render the popup outside the normal React flow
+  return createPortal(popupContent, modalRoot);
 };
 
 export default BookingPopup;
