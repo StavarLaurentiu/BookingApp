@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaHotel } from "react-icons/fa";
 
 import RoomCard from "./RoomCard";
 import "./BookingComponent.css";
@@ -23,6 +23,8 @@ const BookingComponent = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [roomData, setRoomData] = useState([]);
+  const [hotels, setHotels] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState("all");
 
   // Dummy data for roomData
   // This data should be replaced with the actual data fetched from the backend
@@ -123,7 +125,11 @@ const BookingComponent = () => {
     //   }
     // }
     // fetchRoomData();
-    setRoomData(roomDataDummy)
+    setRoomData(roomDataDummy);
+    
+    // Extract unique hotels for the dropdown
+    const uniqueHotels = [...new Set(roomDataDummy.map(room => room.hotel))];
+    setHotels(uniqueHotels);
   }, []);
 
   const handleDateClick = (day, monthOffset = 0) => {
@@ -213,6 +219,10 @@ const BookingComponent = () => {
 
   const days = generateCalendarDays();
 
+  const handleHotelChange = (e) => {
+    setSelectedHotel(e.target.value);
+  };
+
   const handleFilterRooms = () => {
     if (!selectedDates.startDate) {
       setError("Please select a valid date.");
@@ -239,9 +249,15 @@ const BookingComponent = () => {
       return fallsIntoRange;
     };
 
-    const availableRooms = roomData.filter((room) =>
+    // Filter by date availability
+    let availableRooms = roomData.filter((room) =>
       room.occupiedDates.every((occ) => !isDateInRange(occ.date))
     );
+
+    // Filter by selected hotel if not 'all'
+    if (selectedHotel !== "all") {
+      availableRooms = availableRooms.filter(room => room.hotel === selectedHotel);
+    }
 
     setFilteredRooms(availableRooms);
     setIsFiltered(true);
@@ -250,6 +266,23 @@ const BookingComponent = () => {
 
   return (
     <div className="booking-container">
+      <div className="hotel-selector">
+        <label htmlFor="hotel-select">
+          <FaHotel /> Select Hotel:
+        </label>
+        <select 
+          id="hotel-select" 
+          value={selectedHotel} 
+          onChange={handleHotelChange}
+          className="hotel-dropdown"
+        >
+          <option value="all">All Hotels</option>
+          {hotels.map((hotel, index) => (
+            <option key={index} value={hotel}>{hotel}</option>
+          ))}
+        </select>
+      </div>
+
       <div className="calendar-header">
         <button className="date-switcher" onClick={() => handleMonthChange(-1)}>
           <FaArrowLeft></FaArrowLeft>{" "}
@@ -315,13 +348,13 @@ const BookingComponent = () => {
             />
           ))
         ) : isFiltered && selectedDates.startDate ? (
-          <p>No available rooms for the selected dates.</p>
+          <p className="no-rooms-message">No available rooms for the selected dates{selectedHotel !== "all" ? ` at ${selectedHotel}` : ''}.</p>
         ) : success != "" ? (
-          <p>{success}</p>
+          <p className="success-message">{success}</p>
         ) : error != "" ? (
           null
         ) : (
-          <p>Please select a date for booking.</p>
+          <p className="select-dates-message">Please select a date for booking.</p>
         )}
       </div>
     </div>
