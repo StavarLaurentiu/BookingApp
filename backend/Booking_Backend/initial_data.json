@@ -1,0 +1,74 @@
+[
+{
+  "model": "Room_Booking.hotel",
+  "pk": 1,
+  "fields": {
+    "name": "Default Hotel",
+    "description": "Placeholder hotel for default assignment.",
+    "sum_of_ratings": 0,
+    "contact_info": "default@hotel.com",
+    "number_of_ratings": 0
+  }
+},
+{
+  "model": "Room_Booking.hotel",
+  "pk": 2,
+  "fields": {
+    "name": "Grand Continental Hotel",
+    "description": "A luxurious hotel in downtown Bucharest.",
+    "sum_of_ratings": 45,
+    "contact_info": "contact@grandcontinental.ro",
+    "number_of_ratings": 10
+  }
+},
+{
+  "model": "Room_Booking.room",
+  "pk": 1,
+  "fields": {
+    "hotel": 2,
+    "name": "Room 101",
+    "type": "single",
+    "pricePerNight": "250.00",
+    "currency": "RON",
+    "maxOccupancy": 1,
+    "description": "Cozy single room with city view.",
+    "availability": true
+  }
+},
+{
+  "model": "Room_Booking.room",
+  "pk": 2,
+  "fields": {
+    "hotel": 2,
+    "name": "Room 202",
+    "type": "double",
+    "pricePerNight": "400.00",
+    "currency": "RON",
+    "maxOccupancy": 2,
+    "description": "Spacious double room with balcony.",
+    "availability": true
+  }
+},
+{
+  "model": "Room_Booking.customer",
+  "pk": 1,
+  "fields": {
+    "name": "Mihnea Popescu",
+    "email": "mihnea@example.com",
+    "phone_number": "+40712345678",
+    "rating_given": true
+  }
+},
+{
+  "model": "Room_Booking.booking",
+  "pk": 1,
+  "fields": {
+    "customer": 1,
+    "room": 1,
+    "check_in_date": "2025-06-01",
+    "check_out_date": "2025-06-05",
+    "status": "confirmed",
+    "number_of_people": 1
+  }
+}
+]
