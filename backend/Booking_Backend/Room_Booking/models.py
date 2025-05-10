@@ -3,13 +3,24 @@ from django.db import models
 # --- Hotel Model ---
 class Hotel(models.Model):
     name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField()
     sum_of_ratings = models.BigIntegerField(default=0)
     contact_info = models.CharField(max_length=255)
     number_of_ratings = models.BigIntegerField(default=0)
-
+    
     def __str__(self):
         return self.name
+
+
+# -- Hotel Image Model --
+class HotelImage(models.Model):
+    image = models.ImageField(upload_to='hotel_images/')
+    caption = models.CharField(max_length=255, blank=True, null=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='images')
+
+    def __str__(self):
+        return f"Image for {self.hotel.name} - {self.caption or 'No Caption'}"
 
 
 # --- Room Model ---
@@ -36,6 +47,16 @@ class Room(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.type} - {self.pricePerNight} {self.currency}"
+
+
+# -- Room Image Model --
+class RoomImage(models.Model):
+    image = models.ImageField(upload_to='room_images/')
+    caption = models.CharField(max_length=255, blank=True, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='images')
+
+    def __str__(self):
+        return f"Image for {self.room.name} - {self.caption or 'No Caption'}"
 
 
 # --- Customer Model ---
