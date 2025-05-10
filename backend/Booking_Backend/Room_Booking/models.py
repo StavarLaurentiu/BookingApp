@@ -65,6 +65,8 @@ class Customer(models.Model):
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
     rating_given = models.BooleanField(default=False)
+    if rating_given:
+        hotel_rated = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='rated_by', blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.email})"

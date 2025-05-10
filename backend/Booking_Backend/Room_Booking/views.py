@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .models import Room, Hotel, Customer, Booking
-from .serializers import RoomSerializer, HotelSerializer, CustomerSerializer, BookingSerializer
+from .models import Room, Hotel, Customer, Booking, RoomImage, HotelImage
+from .serializers import RoomSerializer, HotelSerializer, CustomerSerializer, BookingSerializer, RoomImageSerializer, HotelImageSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -14,6 +14,8 @@ def api_root(request, format=None):
         'hotels': reverse('hotel-list', request=request, format=format),
         'customers': reverse('customer-list', request=request, format=format),
         'bookings': reverse('booking-list', request=request, format=format),
+        'room_images': reverse('roomimage-list', request=request, format=format),
+        'hotel_images': reverse('hotelimage-list', request=request, format=format),
 	})
 
 
@@ -55,3 +57,23 @@ class BookingList(generics.ListCreateAPIView):
 class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    
+
+class RoomImageList(generics.ListCreateAPIView):
+    queryset = RoomImage.objects.all()
+    serializer_class = RoomImageSerializer
+    
+
+class RoomImageDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = RoomImage.objects.all()
+    serializer_class = RoomImageSerializer
+    
+    
+class HotelImageList(generics.ListCreateAPIView):
+    queryset = HotelImage.objects.all()
+    serializer_class = HotelImageSerializer
+    
+
+class HotelImageDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = HotelImage.objects.all()
+    serializer_class = HotelImageSerializer 
