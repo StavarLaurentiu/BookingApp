@@ -32,17 +32,20 @@ class RoomSerializer(serializers.HyperlinkedModelSerializer):
         model = Room
         fields = ['url', 'id', 'name', 'type', 'pricePerNight', 'currency', 'maxOccupancy', 'description', 'images', 'bookings', 'availability', 'hotel']
 
+  
+class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+    bookings = BookingSerializer(many=True, read_only=True)
+    hotel_rated = serializers.HyperlinkedRelatedField(view_name='hotel-detail', queryset=Hotel.objects.all(), required=False, allow_null=True)
+    class Meta:
+        model = Customer
+        fields = ['url', 'id', 'name', 'email', 'phone_number', 'rating_given', 'bookings', 'hotel_rated']
+
 
 class HotelSerializer(serializers.HyperlinkedModelSerializer):
 	images = HotelImageSerializer(many=True, read_only=True)
 	rooms = RoomSerializer(many=True, read_only=True)
+	rated_by = CustomerSerializer(many=True, read_only=True)
 	class Meta:
 		model = Hotel
-		fields = ['url', 'id', 'name', 'location', 'description', 'sum_of_ratings', 'contact_info', 'number_of_ratings', 'images', 'rooms']
+		fields = ['url', 'id', 'name', 'location', 'description', 'sum_of_ratings', 'contact_info', 'number_of_ratings', 'images', 'rooms', 'rated_by']
   
-  
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
-    bookings = BookingSerializer(many=True, read_only=True)
-    class Meta:
-        model = Customer
-        fields = ['url', 'id', 'name', 'email', 'phone_number', 'rating_given', 'bookings']
