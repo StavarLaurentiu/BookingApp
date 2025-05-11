@@ -102,11 +102,12 @@ const BookingComponent = () => {
   },
 ];
 
+  // TODO: Fetch room data from the backend
   useEffect(() => {
     // async function fetchRoomData() {
     //   try {
     //     const response = await fetch(
-    //       "https://booking-app-backend-4vb9.onrender.com/rooms/",
+    //       "http://127.0.0.1:8000/rooms/",
     //       {
     //         method: "GET",
     //       }
@@ -125,6 +126,7 @@ const BookingComponent = () => {
     //   }
     // }
     // fetchRoomData();
+    // TODO: Remove this dummy data and use the fetched data
     setRoomData(roomDataDummy);
     
     // Extract unique hotels for the dropdown
