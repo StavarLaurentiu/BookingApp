@@ -126,7 +126,6 @@ const BookingComponent = () => {
     //   }
     // }
     // fetchRoomData();
-    // TODO: Remove this dummy data and use the fetched data
     setRoomData(roomDataDummy);
     
     // Extract unique hotels for the dropdown

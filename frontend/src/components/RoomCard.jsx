@@ -74,7 +74,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   
   // Handle confirming the booking
   const handleConfirmBooking = async (bookingData) => {
-    const baseURL = "https://booking-app-backend-4vb9.onrender.com";
+    const baseURL = "https://127.0.0.1:8000";
     const roomUrl = `${baseURL}/rooms/${room.id || room.roomId}/`;
 
     try {
@@ -86,38 +86,41 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       // In a real app, this would be an API call
       console.log("Booking data:", bookingData);
       
-      /* Comment out actual API call for now
-      for (
-        let currentDate = new Date(startDate);
-        currentDate <= endDate;
-        currentDate.setDate(currentDate.getDate() + 1)
-      ) {
-        const response = await fetch(`${baseURL}/occupied-dates/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            room: roomUrl,
-            date: currentDate
-              .toLocaleDateString("hu")
-              .replace(/\./g, "-")
-              .replace(/\s+/g, "")
-              .slice(0, -1),
-            // Add guest info from form
-            occupierInfo: {
-              name: bookingData.name,
-              contact: bookingData.email,
-              phone: bookingData.phone
-            }
-          }),
-        });
+      // TODO: Uncomment the following code to make actual API calls
+      // for (
+      //   let currentDate = new Date(startDate);
+      //   currentDate <= endDate;
+      //   currentDate.setDate(currentDate.getDate() + 1)
+      // ) {
+      //   const response = await fetch(`${baseURL}/occupied-dates/`, {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       room: roomUrl,
+      //       date: currentDate
+      //         .toLocaleDateString("hu")
+      //         .replace(/\./g, "-")
+      //         .replace(/\s+/g, "")
+      //         .slice(0, -1),
+      //       // Add guest info from form
+      //       occupierInfo: {
+      //         name: bookingData.name,
+      //         contact: bookingData.email,
+      //         phone: bookingData.phone
+      //       }
+      //     }),
+      //   });
         
-        if (!response.ok) {
-          throw new Error("Booking failed");
-        }
-      }
-      */
+      //   if (!response.ok) {
+      //     throw new Error("Booking failed");
+      //   }
+
+      //   const data = await response.json();
+      //   onBookingSuccess();
+      //   console.log("Booking response:", data);
+      // }
       
       // Simulate API call success
       await new Promise(resolve => setTimeout(resolve, 1000));

@@ -91,11 +91,12 @@ const AllRooms = () => {
     },
   ];
 
-  useEffect(() => {
+  useEffect(() => { 
+    // TODO: Fetch room data from the backend
     // async function fetchRoomData() {
     //   try {
     //     const response = await fetch(
-    //       "https://booking-app-backend-4vb9.onrender.com/rooms/",
+    //       "https://127.0.0.1:8000/rooms/",
     //       {
     //         method: "GET",
     //       }
