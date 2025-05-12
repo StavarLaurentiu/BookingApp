@@ -93,29 +93,29 @@ const AllRooms = () => {
 
   useEffect(() => { 
     // TODO: Fetch room data from the backend
-    // async function fetchRoomData() {
-    //   try {
-    //     const response = await fetch(
-    //       "https://127.0.0.1:8000/rooms/",
-    //       {
-    //         method: "GET",
-    //       }
-    //     );
+    async function fetchRoomData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/rooms/",
+          {
+            method: "GET",
+          }
+        );
 
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch room data.");
-    //     }
+        if (!response.ok) {
+          throw new Error("Failed to fetch room data.");
+        }
 
-    //     const data = await response.json(); // Parse the JSON response
+        const data = await response.json(); // Parse the JSON response
 
-    //     console.log("Fetching successful:", data);
-    //     setRoomData(data);
-    //   } catch (error) {
-    //     console.error("Error during fetch:", error);
-    //   }
-    // }
-    // fetchRoomData();
-    setRoomData(roomDataDummy)
+        console.log("Fetching successful:", data);
+        setRoomData(data);
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      }
+    }
+    fetchRoomData();
+    // setRoomData(roomDataDummy)
   }, []);
   
   return (

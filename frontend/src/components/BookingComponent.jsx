@@ -102,35 +102,61 @@ const BookingComponent = () => {
   },
 ];
 
-  // TODO: Fetch room data from the backend
+  // TODO: Fetch hotel data from the backend
   useEffect(() => {
-    // async function fetchRoomData() {
-    //   try {
-    //     const response = await fetch(
-    //       "http://127.0.0.1:8000/rooms/",
-    //       {
-    //         method: "GET",
-    //       }
-    //     );
+    async function fetchHotelData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/hotels/",
+          {
+            method: "GET",
+          }
+        );
 
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch room data.");
-    //     }
+        if (!response.ok) {
+          throw new Error("Failed to fetch hotel data.");
+        }
 
-    //     const data = await response.json(); // Parse the JSON response
+        const data = await response.json(); // Parse the JSON response
 
-    //     console.log("Fetching successful:", data);
-    //     setRoomData(data);
-    //   } catch (error) {
-    //     console.error("Error during fetch:", error);
-    //   }
-    // }
-    // fetchRoomData();
-    setRoomData(roomDataDummy);
+        console.log("Fetching successful:", data);
+        // Extract unique hotels for the dropdown
+        const uniqueHotels = [...new Set(data.map(item => item.name))];
+        setHotels(uniqueHotels);
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      }
+    }
+    fetchHotelData();
     
-    // Extract unique hotels for the dropdown
-    const uniqueHotels = [...new Set(roomDataDummy.map(room => room.hotel))];
-    setHotels(uniqueHotels);
+  }, []);  
+
+// TODO: Fetch room data from the backend
+  useEffect(() => {
+    async function fetchRoomData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/rooms/",
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch room data.");
+        }
+
+        const data = await response.json(); // Parse the JSON response
+
+        console.log("Fetching successful:", data);
+        setRoomData(data);
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      }
+    }
+    fetchRoomData();
+    // setRoomData(roomDataDummy);
+    
   }, []);
 
   const handleDateClick = (day, monthOffset = 0) => {
