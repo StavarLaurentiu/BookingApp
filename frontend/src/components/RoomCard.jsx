@@ -74,7 +74,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   
   // Handle confirming the booking
   const handleConfirmBooking = async (bookingData) => {
-    const baseURL = "https://127.0.0.1:8000";
+    const baseURL = "http://127.0.0.1:8000";
     const roomUrl = `${baseURL}/rooms/${room.id || room.roomId}/`;
 
     try {
@@ -85,45 +85,42 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       // For this example, we'll just simulate a successful booking
       // In a real app, this would be an API call
       console.log("Booking data:", bookingData);
+
+      const transformed = {
+        customer: `http://127.0.0.1:8000/customers/1/`,
+        room: bookingData.room.url,
+        check_in_date: (() => {
+          const [m, d, y] = bookingData.dateRange.startDate.split('/');
+          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        })(),
+        check_out_date: (() => {
+          const [m, d, y] = bookingData.dateRange.endDate.split('/');
+          return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        })(),
+        status: "confirmed",
+        number_of_people: 1
+      };
+
+      console.log("transofrmed: ", transformed)
       
       // TODO: Uncomment the following code to make actual API calls
-      // for (
-      //   let currentDate = new Date(startDate);
-      //   currentDate <= endDate;
-      //   currentDate.setDate(currentDate.getDate() + 1)
-      // ) {
-      //   const response = await fetch(`${baseURL}/occupied-dates/`, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       room: roomUrl,
-      //       date: currentDate
-      //         .toLocaleDateString("hu")
-      //         .replace(/\./g, "-")
-      //         .replace(/\s+/g, "")
-      //         .slice(0, -1),
-      //       // Add guest info from form
-      //       occupierInfo: {
-      //         name: bookingData.name,
-      //         contact: bookingData.email,
-      //         phone: bookingData.phone
-      //       }
-      //     }),
-      //   });
+      if (startDate <= endDate) {
+        const response = await fetch(`${baseURL}/bookings/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(transformed),
+        });
         
-      //   if (!response.ok) {
-      //     throw new Error("Booking failed");
-      //   }
+        if (!response.ok) {
+          throw new Error("Booking failed");
+        }
 
-      //   const data = await response.json();
-      //   onBookingSuccess();
-      //   console.log("Booking response:", data);
-      // }
-      
-      // Simulate API call success
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        const data = await response.json();
+        onBookingSuccess();
+        console.log("Booking response:", data);
+      }
       
       // Close popup and notify success
       setShowBookingPopup(false);
