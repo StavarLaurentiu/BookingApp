@@ -25,111 +25,68 @@ const BookingComponent = () => {
   const [roomData, setRoomData] = useState([]);
   const [hotels, setHotels] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState("all");
+  const [hotelData, setHotelData] = useState({});
 
-  // Dummy data for roomData
-  // This data should be replaced with the actual data fetched from the backend
-  // or from a local JSON file.
-  let roomDataDummy = [
-  {
-    roomId: "101",
-    roomName: "Deluxe Suite",
-    roomType: "Suite",
-    hotel: "Grand Plaza Hotel",
-    isOccupied: true,
-    occupiedDates: [
-      {
-        date: "2024-11-10",
-      },
-      {
-        date: "2024-11-11",
-      },
-    ],
-    pricePerNight: 150,
-    currency: "USD",
-    maxOccupancy: 2,
-    images: [deluxe1, deluxe2],
-    description: "A spacious suite with a beautiful view.",
-  },
-  {
-    roomId: "102",
-    roomName: "Standard Room",
-    roomType: "Standard",
-    hotel: "Grand Plaza Hotel",
-    isOccupied: false,
-    occupiedDates: [],
-    pricePerNight: 100,
-    currency: "USD",
-    maxOccupancy: 2,
-    images: [standard1, standard2],
-    description: "A cozy room ideal for single travelers or couples.",
-  },
-  {
-    roomId: "201",
-    roomName: "Family Suite",
-    roomType: "Suite",
-    hotel: "Riverside Resort",
-    isOccupied: false,
-    occupiedDates: [
-      {
-        date: "2024-11-25",
-        occupierInfo: {
-          uid: "guest789",
-          name: "Jane Smith",
-          contact: "janesmith@example.com",
-        },
-      },
-    ],
-    pricePerNight: 200,
-    currency: "USD",
-    maxOccupancy: 4,
-    images: [family_suite1, family_suite2, family_suite3],
-    description:
-      "Perfect for families, with spacious living and a kitchenette.",
-  },
-  {
-    roomId: "301",
-    roomName: "Luxury Penthouse",
-    roomType: "Luxury",
-    hotel: "Skyview Towers",
-    isOccupied: false,
-    occupiedDates: [],
-    pricePerNight: 350,
-    currency: "USD",
-    maxOccupancy: 2,
-    images: [deluxe1, deluxe2], // Reusing images for demo purposes
-    description:
-      "An exclusive penthouse with panoramic views, jacuzzi, and premium amenities for the discerning traveler.",
-  },
-];
-
+  // TODO: Fetch hotel data from the backend
   useEffect(() => {
-    // async function fetchRoomData() {
-    //   try {
-    //     const response = await fetch(
-    //       "https://booking-app-backend-4vb9.onrender.com/rooms/",
-    //       {
-    //         method: "GET",
-    //       }
-    //     );
+    async function fetchHotelData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/hotels/",
+          {
+            method: "GET",
+          }
+        );
 
-    //     if (!response.ok) {
-    //       throw new Error("Failed to fetch room data.");
-    //     }
+        if (!response.ok) {
+          throw new Error("Failed to fetch hotel data.");
+        }
 
-    //     const data = await response.json(); // Parse the JSON response
+        const data = await response.json(); // Parse the JSON response
 
-    //     console.log("Fetching successful:", data);
-    //     setRoomData(data);
-    //   } catch (error) {
-    //     console.error("Error during fetch:", error);
-    //   }
-    // }
-    // fetchRoomData();
-    setRoomData(roomDataDummy);
+        console.log("Fetching hotel data successful:", data);
+        // Extract unique hotels for the dropdown
+        const uniqueHotels = [...new Set(data.map(item => item.name))];
+        setHotels(uniqueHotels);
+        
+        // Create a mapping of hotel URLs to hotel names
+        const hotelMapping = {};
+        data.forEach(hotel => {
+          hotelMapping[hotel.url] = hotel.name;
+        });
+        setHotelData(hotelMapping);
+      } catch (error) {
+        console.error("Error during hotel fetch:", error);
+      }
+    }
+    fetchHotelData();
     
-    // Extract unique hotels for the dropdown
-    const uniqueHotels = [...new Set(roomDataDummy.map(room => room.hotel))];
-    setHotels(uniqueHotels);
+  }, []);  
+
+  // TODO: Fetch room data from the backend
+  useEffect(() => {
+    async function fetchRoomData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/rooms/",
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch room data.");
+        }
+
+        const data = await response.json(); // Parse the JSON response
+
+        console.log("Fetching room data successful:", data);
+        setRoomData(data);
+      } catch (error) {
+        console.error("Error during room fetch:", error);
+      }
+    }
+    fetchRoomData();
   }, []);
 
   const handleDateClick = (day, monthOffset = 0) => {
@@ -234,29 +191,35 @@ const BookingComponent = () => {
     const startDate = selectedDates.startDate;
     const endDate = selectedDates.endDate || selectedDates.startDate;
 
-    const isDateInRange = (occupiedDate) => {
-      const occupied = new Date(occupiedDate);
-      occupied.setHours(0, 0, 0, 0);
-
-      let fallsIntoRange = true;
-
-      if (endDate.getTime() != startDate.getTime()) {
-        fallsIntoRange = occupied >= startDate && occupied <= endDate;
-      } else {
-        fallsIntoRange = occupied.getTime() === startDate.getTime();
-      }
-
-      return fallsIntoRange;
+    // Function to check if a date range overlaps with a booking
+    const isDateRangeOverlapping = (bookingCheckIn, bookingCheckOut) => {
+      const checkIn = new Date(bookingCheckIn);
+      const checkOut = new Date(bookingCheckOut);
+      
+      // Check if there's any overlap between the selected date range and the booking date range
+      return !(endDate < checkIn || startDate > checkOut);
     };
 
     // Filter by date availability
-    let availableRooms = roomData.filter((room) =>
-      room.occupiedDates.every((occ) => !isDateInRange(occ.date))
-    );
+    let availableRooms = roomData.filter((room) => {
+      // If the room has no bookings, it's available
+      if (!room.bookings || room.bookings.length === 0) {
+        return true;
+      }
+      
+      // A room is available if none of its bookings overlap with the selected date range
+      return !room.bookings.some(booking => 
+        isDateRangeOverlapping(booking.check_in_date, booking.check_out_date)
+      );
+    });
 
     // Filter by selected hotel if not 'all'
     if (selectedHotel !== "all") {
-      availableRooms = availableRooms.filter(room => room.hotel === selectedHotel);
+      availableRooms = availableRooms.filter(room => {
+        // Get the hotel name from the hotel URL
+        const hotelName = hotelData[room.hotel];
+        return hotelName === selectedHotel;
+      });
     }
 
     setFilteredRooms(availableRooms);
@@ -336,14 +299,19 @@ const BookingComponent = () => {
                   endDate: null,
                 });
                 setFilteredRooms([]);
-                setSuccess("Booking Succesful!");
+                setSuccess("Booking Successful!");
                 setTimeout(() => {
                   setSuccess("");
                   setError("");
                 }, 5000);
               }}
               key={room.id || room.roomId}
-              room={room}
+              room={{
+                ...room,
+                // Map properties for compatibility with RoomCard component
+                hotel: hotelData[room.hotel],
+                images: room.images.map(imgObj => imgObj.image) // Map to get the 'image' URL from each object
+              }}
               selectedDateRange={selectedDates}
             />
           ))
