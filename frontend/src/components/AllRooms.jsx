@@ -12,6 +12,8 @@ import RoomCard from "./RoomCard";
 
 const AllRooms = () => {
   const [roomData, setRoomData] = useState([]);
+  const [hotelData, setHotelData] = useState({});
+  const [hotels, setHotels] = useState([]);
   
   // Dummy data for roomData
   // This data should be replaced with the actual data fetched from the backend
@@ -91,6 +93,41 @@ const AllRooms = () => {
     },
   ];
 
+  // TODO: Fetch hotel data from the backend
+    useEffect(() => {
+      async function fetchHotelData() {
+        try {
+          const response = await fetch(
+            "http://127.0.0.1:8000/hotels/",
+            {
+              method: "GET",
+            }
+          );
+  
+          if (!response.ok) {
+            throw new Error("Failed to fetch hotel data.");
+          }
+  
+          const data = await response.json(); // Parse the JSON response
+  
+          console.log("Fetching hotel data successful:", data);
+          // Extract unique hotels for the dropdown
+          const uniqueHotels = [...new Set(data.map(item => item.name))];
+          setHotels(uniqueHotels);
+          
+          // Create a mapping of hotel URLs to hotel names
+          const hotelMapping = {};
+          data.forEach(hotel => {
+            hotelMapping[hotel.url] = hotel.name;
+          });
+          setHotelData(hotelMapping);
+        } catch (error) {
+          console.error("Error during hotel fetch:", error);
+        }
+      }
+      fetchHotelData();
+    }, []);
+  
   useEffect(() => { 
     // TODO: Fetch room data from the backend
     async function fetchRoomData() {
@@ -115,16 +152,20 @@ const AllRooms = () => {
       }
     }
     fetchRoomData();
-    // setRoomData(roomDataDummy)
   }, []);
+
   
   return (
     <div className="all-rooms-container">
       <h2>All Rooms</h2>
       <div className="rooms-list">
-        {roomData.map((room) => (
-          <RoomCard key={room.id || room.roomId} room={room} />
-        ))}
+        {roomData.map((room) => {
+          // Assuming room.hotel is the URL from the backend
+          // and hotelData is an object mapping hotel URLs to hotel names
+          const hotelName = hotelData[room.hotel]; // Or use room.hotel as fallback
+          const roomWithHotelName = { ...room, hotel: hotelName, images: room.images.map(imgObj => imgObj.image) };
+          return <RoomCard key={room.id || room.roomId} room={roomWithHotelName} />;
+        })}
       </div>
     </div>
   );

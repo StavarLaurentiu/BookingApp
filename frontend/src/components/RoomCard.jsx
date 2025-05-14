@@ -30,6 +30,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
 
   const { nights, totalPrice } = calculateBookingDetails();
 
+  console.log("Room is:", room);
   // Room features based on room type
   const getRoomFeatures = () => {
     const baseFeatures = [
@@ -38,14 +39,14 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       { icon: <FaThermometerHalf />, name: "Climate Control" }
     ];
 
-    if (room.roomType === "Suite") {
+    if (room.type === "double") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "King Size Bed" },
         { icon: <FaShower />, name: "Rainfall Shower" },
         { icon: <FaCoffee />, name: "Coffee Machine" }
       ];
-    } else if (room.roomType === "Luxury") {
+    } else if (room.type === "Luxury") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "Super King Bed" },
@@ -86,8 +87,37 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       // In a real app, this would be an API call
       console.log("Booking data:", bookingData);
 
-      const transformed = {
-        customer: `http://127.0.0.1:8000/customers/1/`,
+      const customerPayload = { // Renamed to avoid confusion with the response 'data'
+        name: bookingData.name,
+        email: bookingData.email,
+        phone_number: bookingData.phone,
+      };
+
+      const customerResponse = await fetch(`${baseURL}/customers/`, { // Renamed response variable
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(customerPayload),
+        });
+        
+      if (!customerResponse.ok) {
+        const errorData = await customerResponse.json(); // Attempt to get error details
+        console.error("New customer creation failed:", errorData);
+        throw new Error(`New customer failed: ${errorData.detail || customerResponse.statusText}`);
+      }
+
+      const newCustomerData = await customerResponse.json(); // Renamed to be more specific
+      console.log("Customer response:", newCustomerData);
+
+      // Ensure newCustomerData has the URL. Adjust 'newCustomerData.url' if your backend returns it differently.
+      if (!newCustomerData || !newCustomerData.url) {
+        console.error("Customer URL not found in response:", newCustomerData);
+        throw new Error("Failed to retrieve customer URL after creation.");
+      }
+
+      const finalBookingData = {
+        customer: newCustomerData.url,
         room: bookingData.room.url,
         check_in_date: (() => {
           const [m, d, y] = bookingData.dateRange.startDate.split('/');
@@ -101,7 +131,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         number_of_people: 1
       };
 
-      console.log("transofrmed: ", transformed)
+      console.log("transformed: ", finalBookingData)
       
       // TODO: Uncomment the following code to make actual API calls
       if (startDate <= endDate) {
@@ -110,7 +140,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(transformed),
+          body: JSON.stringify(finalBookingData),
         });
         
         if (!response.ok) {
@@ -141,13 +171,13 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
     <div className="room-card">
       <RoomImageSlider images={room.images} />
       <div className="room-info">
-        <h2>{room.roomName}</h2>
+        <h2>{room.name}</h2>
         <div className="hotel-info">
           <FaHotel /> <span>{room.hotel || "Grand Plaza Hotel"}</span>
         </div>
         
         <p>
-          <strong>Type:</strong> {room.roomType}
+          <strong>Type:</strong> {room.type}
         </p>
         
         <div className="room-features">

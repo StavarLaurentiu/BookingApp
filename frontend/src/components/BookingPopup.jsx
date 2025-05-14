@@ -180,7 +180,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
           
           <div className="booking-info-row">
             <div className="booking-info-label">Room Type:</div>
-            <div className="booking-info-value">{room.roomType}</div>
+            <div className="booking-info-value">{room.type}</div>
           </div>
           
           <div className="booking-info-row">

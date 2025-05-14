@@ -309,11 +309,8 @@ const BookingComponent = () => {
               room={{
                 ...room,
                 // Map properties for compatibility with RoomCard component
-                roomId: room.id,
-                roomName: room.name,
-                roomType: room.type,
-                hotel: hotelData[room.hotel] || "Unknown Hotel",
-                images: room.images && room.images.length > 0 ? room.images : [standard1, standard2] // Use default images if none provided
+                hotel: hotelData[room.hotel],
+                images: room.images.map(imgObj => imgObj.image) // Map to get the 'image' URL from each object
               }}
               selectedDateRange={selectedDates}
             />
