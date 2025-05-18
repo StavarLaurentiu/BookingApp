@@ -69,6 +69,45 @@
   display: flex;
   align-items: center;
   text-decoration: none;
+  gap: 1rem;
+}
+
+.admin-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-login-button,
+.admin-dashboard-button,
+.admin-logout-button {
+  background: transparent;
+  border: 1px solid var(--text-on-primary);
+  color: var(--text-on-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.admin-login-button:hover,
+.admin-dashboard-button:hover {
+  background-color: var(--text-on-primary);
+  color: var(--primary);
+}
+
+.admin-logout-button {
+  padding: 0.5rem;
+}
+
+.admin-logout-button:hover {
+  background-color: var(--error);
+  border-color: var(--error);
 }
 
 .nav-link-all-rooms {
@@ -161,5 +200,18 @@
   .navbar-right {
     margin-left: auto;
     margin-right: 1rem;
+    gap: 0.5rem;
+  }
+
+  .admin-section {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-login-button,
+  .admin-dashboard-button,
+  .admin-logout-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
   }
 }
