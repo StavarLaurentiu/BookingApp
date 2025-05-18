@@ -63,13 +63,62 @@ const AdminDashboard = ({ onClose }) => {
       
       switch (activeTab) {
         case 'bookings':
-          setBookings(data);
+          // Process bookings to include customer and room names
+          const enhancedBookings = await Promise.all(data.map(async (booking) => {
+            // Fetch customer data
+            const customerResponse = await fetch(booking.customer, {
+              headers: getAuthHeaders(),
+            });
+            
+            // Fetch room data
+            const roomResponse = await fetch(booking.room, {
+              headers: getAuthHeaders(),
+            });
+            
+            let customerData = {};
+            let roomData = {};
+            
+            if (customerResponse.ok) {
+              customerData = await customerResponse.json();
+            }
+            
+            if (roomResponse.ok) {
+              roomData = await roomResponse.json();
+            }
+            
+            return {
+              ...booking,
+              customerName: customerData.name || 'Unknown',
+              roomName: roomData.name || 'Unknown'
+            };
+          }));
+          
+          setBookings(enhancedBookings);
           break;
         case 'hotels':
           setHotels(data);
           break;
         case 'rooms':
-          setRooms(data);
+          // Process rooms to include hotel names
+          const enhancedRooms = await Promise.all(data.map(async (room) => {
+            // Fetch hotel data
+            const hotelResponse = await fetch(room.hotel, {
+              headers: getAuthHeaders(),
+            });
+            
+            let hotelData = {};
+            
+            if (hotelResponse.ok) {
+              hotelData = await hotelResponse.json();
+            }
+            
+            return {
+              ...room,
+              hotelName: hotelData.name || 'Unknown Hotel'
+            };
+          }));
+          
+          setRooms(enhancedRooms);
           break;
       }
     } catch (error) {
@@ -193,8 +242,8 @@ const AdminDashboard = ({ onClose }) => {
               {bookings.map((booking) => (
                 <tr key={booking.id}>
                   <td>{booking.id}</td>
-                  <td>{booking.customer}</td>
-                  <td>{booking.room}</td>
+                  <td>{booking.customerName}</td>
+                  <td>{booking.roomName}</td>
                   <td>{booking.check_in_date}</td>
                   <td>{booking.check_out_date}</td>
                   <td>
@@ -254,7 +303,7 @@ const AdminDashboard = ({ onClose }) => {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Location</th>
-                <th>Contact</th>
+                <th>Email Address</th>
                 <th>Rating</th>
                 <th>Actions</th>
               </tr>
@@ -325,7 +374,7 @@ const AdminDashboard = ({ onClose }) => {
                 <th>Name</th>
                 <th>Type</th>
                 <th>Hotel</th>
-                <th>Price</th>
+                <th>Base Price</th>
                 <th>Available</th>
                 <th>Actions</th>
               </tr>
@@ -336,7 +385,7 @@ const AdminDashboard = ({ onClose }) => {
                   <td>{room.id}</td>
                   <td>{room.name}</td>
                   <td>{room.type}</td>
-                  <td>{room.hotel}</td>
+                  <td>{room.hotelName}</td> {/* Replace room.hotel with room.hotelName */}
                   <td>{room.pricePerNight} {room.currency}</td>
                   <td>
                     <span className={`status-badge ${room.availability ? 'available' : 'unavailable'}`}>
