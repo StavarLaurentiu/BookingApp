@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './BookingPopup.css';
-import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaCreditCard } from 'react-icons/fa';
+import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaCreditCard, FaPercent, FaSun, FaSnowflake } from 'react-icons/fa';
+import { calculateDynamicPrice } from '../utils/pricingUtils';
 
 const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPriceDetails, setShowPriceDetails] = useState(false);
   const [modalRoot] = useState(() => {
     // Create a div for the portal if it doesn't exist
     let element = document.getElementById("booking-popup-root");
@@ -53,27 +55,36 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
       return { nights: 0, totalPrice: 0, startDate: null, endDate: null };
     }
 
-    const startDate = new Date(selectedDateRange.startDate);
-    const endDate = selectedDateRange.endDate 
-      ? new Date(selectedDateRange.endDate) 
-      : new Date(selectedDateRange.startDate);
-    
-    // Calculate number of nights
-    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    const nights = Math.round(Math.abs((endDate - startDate) / oneDay)) || 1;
-    
-    // Calculate total price
-    const totalPrice = room.pricePerNight * nights;
+    // If dynamic pricing has already been calculated, use it
+    if (room.dynamicPricing) {
+      return {
+        nights: room.dynamicPricing.nights,
+        totalPrice: room.dynamicPricing.totalPrice,
+        startDate: new Date(selectedDateRange.startDate).toLocaleDateString(),
+        endDate: new Date(selectedDateRange.endDate || selectedDateRange.startDate).toLocaleDateString(),
+        breakdown: room.dynamicPricing.breakdown,
+        lengthDiscount: room.dynamicPricing.lengthDiscount
+      };
+    }
 
-    return { 
-      nights, 
-      totalPrice, 
-      startDate: startDate.toLocaleDateString(), 
-      endDate: endDate.toLocaleDateString() 
+    // Otherwise calculate it
+    const pricingDetails = calculateDynamicPrice(
+      room.pricePerNight,
+      selectedDateRange.startDate,
+      selectedDateRange.endDate || selectedDateRange.startDate
+    );
+
+    return {
+      nights: pricingDetails.nights,
+      totalPrice: pricingDetails.totalPrice,
+      startDate: new Date(selectedDateRange.startDate).toLocaleDateString(),
+      endDate: new Date(selectedDateRange.endDate || selectedDateRange.startDate).toLocaleDateString(),
+      breakdown: pricingDetails.breakdown,
+      lengthDiscount: pricingDetails.lengthDiscount
     };
   };
 
-  const { nights, totalPrice, startDate, endDate } = calculateBookingDetails();
+  const { nights, totalPrice, startDate, endDate, breakdown, lengthDiscount } = calculateBookingDetails();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -161,7 +172,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
         
         <div className="booking-popup-header">
           <h2>Complete Your Booking</h2>
-          <h3>{room.roomName}</h3>
+          <h3>{room.name}</h3>
           <div className="hotel-name">{room.hotel}</div>
         </div>
         
@@ -189,9 +200,51 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
           </div>
           
           <div className="booking-info-row">
-            <div className="booking-info-label">Total Cost:</div>
-            <div className="booking-info-value price">{room.currency} {totalPrice}</div>
+            <div className="booking-info-label">Base Price:</div>
+            <div className="booking-info-value">{room.currency} {room.pricePerNight} / night</div>
           </div>
+          
+          <div className="booking-info-row">
+            <div className="booking-info-label">Total Cost:</div>
+            <div className="booking-info-value price">{room.currency} {totalPrice.toFixed(2)}</div>
+          </div>
+          
+          <button 
+            className="price-details-toggle" 
+            onClick={() => setShowPriceDetails(!showPriceDetails)}
+          >
+            {showPriceDetails ? 'Hide price details' : 'Show price details'}
+          </button>
+          
+          {showPriceDetails && breakdown && (
+            <div className="price-breakdown-details">
+              <h4>Price Breakdown</h4>
+              <ul>
+                {breakdown.map((day, index) => (
+                  <li key={index} className="day-price">
+                    <span className="day-date">{day.date}:</span>
+                    <span className="day-price-value">{room.currency} {day.price.toFixed(2)}</span>
+                    <div className="day-factors">
+                      {day.adjustments.map((factor, idx) => (
+                        <span key={idx} className={`factor ${factor}`}>
+                          {factor === 'weekend' && <><FaCalendarAlt /> Weekend</>}
+                          {factor === 'summer' && <><FaSun /> Summer</>}
+                          {factor === 'winter' && <><FaSnowflake /> Winter</>}
+                        </span>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              
+              {lengthDiscount && (
+                <div className="stay-discount">
+                  <FaPercent /> Stay discount ({lengthDiscount.rate}%): 
+                  <span className="discount-amount">-{room.currency} {lengthDiscount.amount.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         <form onSubmit={handleSubmit} className="booking-form">
@@ -304,7 +357,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
               className="confirm-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+              {isSubmitting ? 'Processing...' : `Confirm Booking (${room.currency} ${totalPrice.toFixed(2)})`}
             </button>
           </div>
         </form>

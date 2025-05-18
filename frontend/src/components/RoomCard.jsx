@@ -1,36 +1,30 @@
 import React, { useState } from "react";
 import RoomImageSlider from "./RoomImageSlider";
 import BookingPopup from "./BookingPopup";
-import { FaUsers, FaWifi, FaBed, FaThermometerHalf, FaTv, FaShower, FaCoffee, FaHotel } from "react-icons/fa";
+import { FaUsers, FaWifi, FaBed, FaThermometerHalf, FaTv, FaShower, FaCoffee, FaHotel, FaPercent, FaCalendarAlt, FaSun, FaSnowflake } from "react-icons/fa";
 import "./RoomDetails.css";
+import { calculateDynamicPrice } from "../utils/pricingUtils";
 
 const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   const [showBookingPopup, setShowBookingPopup] = useState(false);
+  const [showPricingDetails, setShowPricingDetails] = useState(false);
   
-  // Calculate nights and total price
+  // Calculate dynamic pricing using our utility function
   const calculateBookingDetails = () => {
     if (!selectedDateRange || !selectedDateRange.startDate) {
-      return { nights: 0, totalPrice: 0 };
+      return { nights: 0, totalPrice: 0, pricePerNight: room.pricePerNight };
     }
 
-    const startDate = new Date(selectedDateRange.startDate);
-    const endDate = selectedDateRange.endDate 
-      ? new Date(selectedDateRange.endDate) 
-      : new Date(selectedDateRange.startDate);
-    
-    // Calculate number of nights
-    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    const nights = Math.round(Math.abs((endDate - startDate) / oneDay)) || 1;
-    
-    // Calculate total price
-    const totalPrice = room.pricePerNight * nights;
-
-    return { nights, totalPrice };
+    return calculateDynamicPrice(
+      room.pricePerNight,
+      selectedDateRange.startDate,
+      selectedDateRange.endDate || selectedDateRange.startDate
+    );
   };
 
-  const { nights, totalPrice } = calculateBookingDetails();
+  const pricingDetails = calculateBookingDetails();
+  const { nights, totalPrice, pricePerNight, breakdown, lengthDiscount } = pricingDetails;
 
-  console.log("Room is:", room);
   // Room features based on room type
   const getRoomFeatures = () => {
     const baseFeatures = [
@@ -46,7 +40,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         { icon: <FaShower />, name: "Rainfall Shower" },
         { icon: <FaCoffee />, name: "Coffee Machine" }
       ];
-    } else if (room.type === "Luxury") {
+    } else if (room.type === "Luxury" || room.type === "luxury") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "Super King Bed" },
@@ -76,8 +70,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   // Handle confirming the booking
   const handleConfirmBooking = async (bookingData) => {
     const baseURL = "http://127.0.0.1:8000";
-    const roomUrl = `${baseURL}/rooms/${room.id || room.roomId}/`;
-
+    
     try {
       // Create date range from the booking data
       const startDate = new Date(bookingData.dateRange.startDate);
@@ -133,7 +126,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
 
       console.log("transformed: ", finalBookingData)
       
-      // TODO: Uncomment the following code to make actual API calls
+      // Create the booking
       if (startDate <= endDate) {
         const response = await fetch(`${baseURL}/bookings/`, {
           method: "POST",
@@ -148,7 +141,6 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         }
 
         const data = await response.json();
-        onBookingSuccess();
         console.log("Booking response:", data);
       }
       
@@ -192,15 +184,66 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         <div className="price-container">
           <span className="currency">{room.currency}</span>
           <span className="price">{room.pricePerNight}</span>
-          <span className="per-night"> / night</span>
+          <span className="per-night"> / night (base price)</span>
         </div>
         
         {selectedDateRange && selectedDateRange.startDate && (
           <div className="booking-details">
             <p>
-              <strong>{nights} night{nights !== 1 ? 's' : ''}</strong> • Total: 
-              <strong> {room.currency} {totalPrice}</strong>
+              <strong>{nights} night{nights !== 1 ? 's' : ''}</strong> • Average rate: 
+              <strong> {room.currency} {pricePerNight}</strong> per night
             </p>
+            <p>Total: <strong>{room.currency} {totalPrice}</strong></p>
+            
+            {/* Toggle button to show/hide price breakdown */}
+            <button 
+              className="price-breakdown-toggle" 
+              onClick={(e) => {
+                e.preventDefault();
+                setShowPricingDetails(!showPricingDetails);
+              }}
+            >
+              {showPricingDetails ? 'Hide price details' : 'Show price details'}
+            </button>
+            
+            {/* Price breakdown details */}
+            {showPricingDetails && (
+              <div className="price-breakdown">
+                <h4>Price Breakdown</h4>
+                <ul className="breakdown-list">
+                  {breakdown.map((day, index) => (
+                    <li key={index} className="breakdown-item">
+                      <span className="breakdown-date">{day.date}:</span>
+                      <span className="breakdown-price">{room.currency} {day.price.toFixed(2)}</span>
+                      {day.adjustments.length > 0 && (
+                        <div className="adjustment-factors">
+                          {day.adjustments.includes('weekend') && (
+                            <span className="factor weekend"><FaCalendarAlt /> Weekend rate</span>
+                          )}
+                          {day.adjustments.includes('summer') && (
+                            <span className="factor seasonal"><FaSun /> Summer season</span>
+                          )}
+                          {day.adjustments.includes('winter') && (
+                            <span className="factor seasonal"><FaSnowflake /> Winter holiday</span>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                
+                {lengthDiscount && (
+                  <div className="length-discount">
+                    <FaPercent /> <strong>{lengthDiscount.rate}% discount</strong> for {nights} night stay
+                    <span className="discount-amount">-{room.currency} {lengthDiscount.amount.toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className="total-price">
+                  <strong>Total Price: {room.currency} {totalPrice.toFixed(2)}</strong>
+                </div>
+              </div>
+            )}
           </div>
         )}
         
@@ -210,11 +253,12 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       {selectedDateRange && (
         <div className="booking-action">
           <button
-            className="book-room-button"
+            className="book-button"
             onClick={handleOpenBookingPopup}
             disabled={!selectedDateRange.startDate}
           >
-            {selectedDateRange.startDate ? `Book for ${room.currency} ${totalPrice}` : 'Select dates to book'}
+            <span className="text">Book Now</span>
+            <span className="price">{room.currency} {totalPrice}</span>
           </button>
         </div>
       )}
@@ -222,7 +266,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       {/* BookingPopup using React Portal to avoid DOM hierarchy issues */}
       {showBookingPopup && (
         <BookingPopup
-          room={room}
+          room={{...room, dynamicPricing: pricingDetails}}
           selectedDateRange={selectedDateRange}
           onClose={handleCloseBookingPopup}
           onConfirm={handleConfirmBooking}

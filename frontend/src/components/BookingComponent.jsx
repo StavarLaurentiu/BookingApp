@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight, FaHotel } from "react-icons/fa";
-
+import { FaArrowLeft, FaArrowRight, FaHotel, FaInfoCircle } from "react-icons/fa";
 import RoomCard from "./RoomCard";
 import "./BookingComponent.css";
-
-import deluxe1 from '../assets/images/deluxe1.jpg';
-import deluxe2 from "../assets/images/deluxe2.jpg";
-import family_suite1 from "../assets/images/family_suite1.jpg";
-import family_suite2 from "../assets/images/family_suite2.webp";
-import family_suite3 from "../assets/images/family_suite3.jpg";
-import standard1 from "../assets/images/standard1.jpg";
-import standard2 from "../assets/images/standard2.webp";
 
 const BookingComponent = () => {
   const [selectedDates, setSelectedDates] = useState({
@@ -26,8 +17,9 @@ const BookingComponent = () => {
   const [hotels, setHotels] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState("all");
   const [hotelData, setHotelData] = useState({});
+  const [showPricingInfo, setShowPricingInfo] = useState(false);
 
-  // TODO: Fetch hotel data from the backend
+  // Fetch hotel data from the backend
   useEffect(() => {
     async function fetchHotelData() {
       try {
@@ -42,9 +34,9 @@ const BookingComponent = () => {
           throw new Error("Failed to fetch hotel data.");
         }
 
-        const data = await response.json(); // Parse the JSON response
-
+        const data = await response.json();
         console.log("Fetching hotel data successful:", data);
+        
         // Extract unique hotels for the dropdown
         const uniqueHotels = [...new Set(data.map(item => item.name))];
         setHotels(uniqueHotels);
@@ -60,10 +52,9 @@ const BookingComponent = () => {
       }
     }
     fetchHotelData();
-    
   }, []);  
 
-  // TODO: Fetch room data from the backend
+  // Fetch room data from the backend
   useEffect(() => {
     async function fetchRoomData() {
       try {
@@ -78,8 +69,7 @@ const BookingComponent = () => {
           throw new Error("Failed to fetch room data.");
         }
 
-        const data = await response.json(); // Parse the JSON response
-
+        const data = await response.json();
         console.log("Fetching room data successful:", data);
         setRoomData(data);
       } catch (error) {
@@ -95,6 +85,13 @@ const BookingComponent = () => {
       currentDate.getMonth() + monthOffset,
       day
     );
+
+    // Don't allow selecting dates in the past
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      return;
+    }
 
     if (!selectedDates.startDate || selectedDates.endDate) {
       // If no dates are selected or both are already set, reset to a single date
@@ -174,6 +171,19 @@ const BookingComponent = () => {
     );
   };
 
+  const isDateInPast = (day, monthOffset) => {
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + monthOffset,
+      day
+    );
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return date < today;
+  };
+
   const days = generateCalendarDays();
 
   const handleHotelChange = (e) => {
@@ -229,6 +239,40 @@ const BookingComponent = () => {
 
   return (
     <div className="booking-container">
+      <div className="dynamic-pricing-info">
+        <button 
+          className="info-button" 
+          onClick={() => setShowPricingInfo(!showPricingInfo)}
+          aria-label="Show pricing information"
+        >
+          <FaInfoCircle /> Dynamic Pricing Information
+        </button>
+        
+        {showPricingInfo && (
+          <div className="pricing-info-panel">
+            <h3>How Our Dynamic Pricing Works</h3>
+            <p>Our room rates vary based on several factors to provide you with fair and competitive pricing:</p>
+            <ul>
+              <li><strong>Weekend Premium:</strong> Friday and Saturday nights have a 25% higher rate</li>
+              <li><strong>Seasonal Adjustments:</strong> 
+                <ul>
+                  <li>Summer (June-September): 20% premium</li>
+                  <li>Winter Holidays (December-January): 15% premium</li>
+                </ul>
+              </li>
+              <li><strong>Stay Duration Discounts:</strong> 
+                <ul>
+                  <li>3-6 nights: 5% discount</li>
+                  <li>7+ nights: 10% discount</li>
+                </ul>
+              </li>
+            </ul>
+            <p>Base room rates are shown, and your final price will be calculated based on your selected dates.</p>
+            <button className="close-info-button" onClick={() => setShowPricingInfo(false)}>Close</button>
+          </div>
+        )}
+      </div>
+      
       <div className="hotel-selector">
         <label htmlFor="hotel-select">
           <FaHotel /> Select Hotel:
@@ -248,7 +292,7 @@ const BookingComponent = () => {
 
       <div className="calendar-header">
         <button className="date-switcher" onClick={() => handleMonthChange(-1)}>
-          <FaArrowLeft></FaArrowLeft>{" "}
+          <FaArrowLeft />
         </button>
         <h2>
           {currentDate.toLocaleString("default", {
@@ -257,37 +301,54 @@ const BookingComponent = () => {
           })}
         </h2>
         <button className="date-switcher" onClick={() => handleMonthChange(1)}>
-          <FaArrowRight></FaArrowRight>
+          <FaArrowRight />
         </button>
       </div>
 
       <div className="calendar-day-labels">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-              <div key={index} className="day-label">
-                {day}
-              </div>
-            ))}
-      </div>
-
-      <div className="calendar-days">
-        {days.map(({ day, monthOffset }, index) => (
-          <div
-            key={index}
-            className={`calendar-day ${
-              isDateSelected(day, monthOffset) ? "selected" : ""
-            } ${monthOffset !== 0 ? "overflow" : ""}`}
-            onClick={() => handleDateClick(day, monthOffset)}
-          >
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+          <div key={index} className="day-label">
             {day}
           </div>
         ))}
       </div>
+
+      <div className="calendar-days">
+        {days.map(({ day, monthOffset }, index) => {
+          const isPastDay = isDateInPast(day, monthOffset);
+          return (
+            <div
+              key={index}
+              className={`calendar-day 
+                ${isDateSelected(day, monthOffset) ? "selected" : ""} 
+                ${monthOffset !== 0 ? "overflow" : ""} 
+                ${isPastDay ? "past-day" : ""}`}
+              onClick={() => !isPastDay && handleDateClick(day, monthOffset)}
+            >
+              {day}
+            </div>
+          );
+        })}
+      </div>
+
+      {selectedDates.startDate && (
+        <div className="selected-date-summary">
+          {selectedDates.endDate && selectedDates.startDate.getTime() !== selectedDates.endDate.getTime() ? (
+            <p>Selected stay: <strong>{selectedDates.startDate.toLocaleDateString()} to {selectedDates.endDate.toLocaleDateString()}</strong> 
+              ({Math.round(Math.abs((selectedDates.endDate - selectedDates.startDate) / (24 * 60 * 60 * 1000)))} nights)
+            </p>
+          ) : (
+            <p>Selected date: <strong>{selectedDates.startDate.toLocaleDateString()}</strong> (1 night)</p>
+          )}
+        </div>
+      )}
 
       <button className="search-available-rooms-button" onClick={handleFilterRooms}>
         Search Available Rooms
       </button>
 
       {error && <div className="error-message">{error}</div>}
+      {success && <div className="success-message">{success}</div>}
 
       <div className="filtered-rooms">
         {filteredRooms.length > 0 ? (
@@ -317,9 +378,9 @@ const BookingComponent = () => {
           ))
         ) : isFiltered && selectedDates.startDate ? (
           <p className="no-rooms-message">No available rooms for the selected dates{selectedHotel !== "all" ? ` at ${selectedHotel}` : ''}.</p>
-        ) : success != "" ? (
+        ) : success ? (
           <p className="success-message">{success}</p>
-        ) : error != "" ? (
+        ) : error ? (
           null
         ) : (
           <p className="select-dates-message">Please select a date for booking.</p>
