@@ -36,6 +36,16 @@
   align-items: center;
   gap: 0.8rem;
   z-index: 2;
+  text-decoration: none;
+  color: inherit;
+}
+
+.navbar-left:hover {
+  text-decoration: none;
+}
+
+.navbar-left:visited {
+  color: inherit;
 }
 
 .navbar-logo {
@@ -124,7 +134,112 @@
 .navbar-right {
   display: flex;
   align-items: center;
+  gap: 1rem;
   z-index: 2;
+}
+
+.nav-link-all-rooms {
+  text-decoration: none;
+  color: var(--text-on-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link-all-rooms::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.nav-link-all-rooms:hover::before {
+  left: 100%;
+}
+
+.nav-link-all-rooms:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+.admin-section {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-login-button,
+.admin-dashboard-button,
+.admin-logout-button {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-on-primary);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-login-button::before,
+.admin-dashboard-button::before,
+.admin-logout-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.admin-login-button:hover::before,
+.admin-dashboard-button:hover::before,
+.admin-logout-button:hover::before {
+  left: 100%;
+}
+
+.admin-login-button:hover,
+.admin-dashboard-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.admin-logout-button {
+  padding: 0.6rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.admin-logout-button:hover {
+  background: rgba(var(--error-rgb), 0.3);
+  border-color: rgba(var(--error-rgb), 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--error-rgb), 0.3);
 }
 
 .theme-toggle {
@@ -252,6 +367,27 @@
   .navbar-right {
     margin-left: auto;
     margin-right: 0.8rem;
+    gap: 0.6rem;
+  }
+  
+  .nav-link-all-rooms {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .admin-login-button,
+  .admin-dashboard-button {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .admin-logout-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .admin-section {
+    gap: 0.4rem;
   }
   
   .theme-toggle {
@@ -286,6 +422,32 @@
     font-size: 1.2rem;
   }
   
+  .navbar-right {
+    margin-right: 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .nav-link-all-rooms {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .admin-section {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .admin-login-button,
+  .admin-dashboard-button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  .admin-logout-button {
+    width: 34px;
+    height: 34px;
+  }
+  
   .theme-toggle {
     width: 34px;
     height: 34px;
@@ -295,10 +457,6 @@
   .navbar-center li a {
     padding: 0.7rem 1rem;
     font-size: 0.85rem;
-  }
-  
-  .navbar-right {
-    margin-right: 0.5rem;
   }
 }
 
@@ -320,6 +478,26 @@
     width: 32px;
     height: 32px;
     font-size: 1.1rem;
+  }
+  
+  .navbar-right {
+    gap: 0.3rem;
+  }
+  
+  .nav-link-all-rooms {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .admin-login-button,
+  .admin-dashboard-button {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .admin-logout-button {
+    width: 32px;
+    height: 32px;
   }
   
   .theme-toggle {
