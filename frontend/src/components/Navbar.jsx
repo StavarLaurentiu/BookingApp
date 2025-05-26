@@ -1,4 +1,3 @@
-// ...existing code...
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSun, FaMoon, FaBars, FaTimes, FaUserShield, FaSignOutAlt } from "react-icons/fa";
@@ -51,11 +50,8 @@ const Navbar = () => {
           {menuOpen ? <FaTimes /> : <FaBars />}
         </div>
         
-        {/* navbar-center list is now empty as Home is removed and All Rooms is moved. */}
-        {/* This will result in an empty mobile dropdown menu. */}
         <ul className={`navbar-center ${menuOpen ? 'active' : ''}`}>
-          {/* Home link removed */}
-          {/* All Rooms link moved to navbar-right */}
+          {/* Keep empty or add navigation items as needed */}
         </ul>
         
         <div className="navbar-right">
@@ -115,4 +111,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-// ...existing code...

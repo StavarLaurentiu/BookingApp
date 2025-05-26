@@ -1,13 +1,6 @@
 import React from "react";
 import "./AllRooms.css";
 import { useState, useEffect } from "react";
-import deluxe1 from "../assets/images/deluxe1.jpg";
-import deluxe2 from "../assets/images/deluxe2.jpg";
-import family_suite1 from "../assets/images/family_suite1.jpg";
-import family_suite2 from "../assets/images/family_suite2.webp";
-import family_suite3 from "../assets/images/family_suite3.jpg";
-import standard1 from "../assets/images/standard1.jpg";
-import standard2 from "../assets/images/standard2.webp";
 import RoomCard from "./RoomCard";
 
 const AllRooms = () => {
@@ -15,121 +8,43 @@ const AllRooms = () => {
   const [hotelData, setHotelData] = useState({});
   const [hotels, setHotels] = useState([]);
   
-  // Dummy data for roomData
-  // This data should be replaced with the actual data fetched from the backend
-  // or from a local JSON file.
-  let roomDataDummy = [
-    {
-      roomId: "101",
-      roomName: "Deluxe Suite",
-      roomType: "Suite",
-      hotel: "Grand Plaza Hotel",
-      isOccupied: true,
-      occupiedDates: [
-        {
-          date: "2024-11-10",
-        },
-        {
-          date: "2024-11-11",
-        },
-      ],
-      pricePerNight: 150,
-      currency: "USD",
-  
-      maxOccupancy: 2,
-      images: [deluxe1, deluxe2],
-      description: "A spacious suite with a beautiful view.",
-    },
-    {
-      roomId: "102",
-      roomName: "Standard Room",
-      roomType: "Standard",
-      hotel: "Grand Plaza Hotel",
-      isOccupied: false,
-      occupiedDates: [],
-      pricePerNight: 100,
-      currency: "USD",
-  
-      maxOccupancy: 2,
-      images: [standard1, standard2],
-      description: "A cozy room ideal for single travelers or couples.",
-    },
-    {
-      roomId: "201",
-      roomName: "Family Suite",
-      roomType: "Suite",
-      hotel: "Riverside Resort",
-      isOccupied: false,
-      occupiedDates: [
-        {
-          date: "2024-11-25",
-          occupierInfo: {
-            uid: "guest789",
-            name: "Jane Smith",
-            contact: "janesmith@example.com",
-          },
-        },
-      ],
-      pricePerNight: 200,
-      currency: "USD",
-      maxOccupancy: 4,
-      images: [family_suite1, family_suite2, family_suite3],
-      description:
-        "Perfect for families, with spacious living and a kitchenette.",
-    },
-    {
-      roomId: "301",
-      roomName: "Luxury Penthouse",
-      roomType: "Luxury",
-      hotel: "Skyview Towers",
-      isOccupied: false,
-      occupiedDates: [],
-      pricePerNight: 350,
-      currency: "USD",
-      maxOccupancy: 2,
-      images: [deluxe1, deluxe2], // Reusing images for demo purposes
-      description:
-        "An exclusive penthouse with panoramic views, jacuzzi, and premium amenities for the discerning traveler.",
-    },
-  ];
-
-  // TODO: Fetch hotel data from the backend
-    useEffect(() => {
-      async function fetchHotelData() {
-        try {
-          const response = await fetch(
-            "http://127.0.0.1:8000/hotels/",
-            {
-              method: "GET",
-            }
-          );
-  
-          if (!response.ok) {
-            throw new Error("Failed to fetch hotel data.");
+  // Fetch hotel data from the backend
+  useEffect(() => {
+    async function fetchHotelData() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/hotels/",
+          {
+            method: "GET",
           }
-  
-          const data = await response.json(); // Parse the JSON response
-  
-          console.log("Fetching hotel data successful:", data);
-          // Extract unique hotels for the dropdown
-          const uniqueHotels = [...new Set(data.map(item => item.name))];
-          setHotels(uniqueHotels);
-          
-          // Create a mapping of hotel URLs to hotel names
-          const hotelMapping = {};
-          data.forEach(hotel => {
-            hotelMapping[hotel.url] = hotel.name;
-          });
-          setHotelData(hotelMapping);
-        } catch (error) {
-          console.error("Error during hotel fetch:", error);
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch hotel data.");
         }
+
+        const data = await response.json();
+        console.log("Fetching hotel data successful:", data);
+        
+        // Extract unique hotels for the dropdown
+        const uniqueHotels = [...new Set(data.map(item => item.name))];
+        setHotels(uniqueHotels);
+        
+        // Create a mapping of hotel URLs to hotel names
+        const hotelMapping = {};
+        data.forEach(hotel => {
+          hotelMapping[hotel.url] = hotel.name;
+        });
+        setHotelData(hotelMapping);
+      } catch (error) {
+        console.error("Error during hotel fetch:", error);
       }
-      fetchHotelData();
-    }, []);
-  
+    }
+    fetchHotelData();
+  }, []);
+
   useEffect(() => { 
-    // TODO: Fetch room data from the backend
+    // Fetch room data from the backend
     async function fetchRoomData() {
       try {
         const response = await fetch(
@@ -143,8 +58,7 @@ const AllRooms = () => {
           throw new Error("Failed to fetch room data.");
         }
 
-        const data = await response.json(); // Parse the JSON response
-
+        const data = await response.json();
         console.log("Fetching successful:", data);
         setRoomData(data);
       } catch (error) {
@@ -153,17 +67,22 @@ const AllRooms = () => {
     }
     fetchRoomData();
   }, []);
-
   
   return (
     <div className="all-rooms-container">
       <h2>All Rooms</h2>
       <div className="rooms-list">
         {roomData.map((room) => {
-          // Assuming room.hotel is the URL from the backend
-          // and hotelData is an object mapping hotel URLs to hotel names
-          const hotelName = hotelData[room.hotel]; // Or use room.hotel as fallback
-          const roomWithHotelName = { ...room, hotel: hotelName, images: room.images.map(imgObj => imgObj.image) };
+          // Convert backend data structure to match RoomCard expectations
+          const roomWithHotelName = { 
+            ...room, 
+            hotel: hotelData[room.hotel],
+            images: room.images.map(imgObj => imgObj.image),
+            // Map backend fields to expected frontend fields
+            roomName: room.name,
+            roomType: room.type,
+            // Keep other fields as they are
+          };
           return <RoomCard key={room.id || room.roomId} room={roomWithHotelName} />;
         })}
       </div>
