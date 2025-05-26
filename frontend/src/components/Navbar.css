@@ -3,51 +3,89 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--primary);
-  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  padding: 1rem 1.5rem;
   color: var(--text-on-primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom: 3rem;
+  box-shadow: 
+    0 4px 20px rgba(var(--primary-rgb), 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
   width: 100%;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
+  overflow: hidden;
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.8s ease;
+}
+
+.navbar:hover::before {
+  left: 100%;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  text-decoration: none;
-  color: var(--text-on-primary);
+  gap: 0.8rem;
+  z-index: 2;
 }
 
 .navbar-logo {
-  width: 35px;
-  height: 35px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-logo:hover {
+  transform: rotate(5deg) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .navbar h1 {
   margin: 0;
   color: var(--text-on-primary);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navbar-center {
   list-style: none;
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   margin: 0;
   padding: 0;
+  z-index: 2;
 }
 
 .navbar-center li a {
   color: var(--text-on-primary);
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.95rem;
   position: relative;
-  padding: 0.5rem 0;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .navbar-center li a::after {
@@ -56,106 +94,106 @@
   width: 0;
   height: 2px;
   bottom: 0;
-  left: 0;
-  background-color: var(--secondary);
-  transition: width 0.3s ease;
+  left: 50%;
+  background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+  transition: all 0.3s ease;
+  border-radius: 1px;
+}
+
+.navbar-center li a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-center li a:hover::after {
-  width: 100%;
+  width: 80%;
+  left: 10%;
+}
+
+.navbar-center li a.active {
+  background: rgba(var(--secondary-rgb), 0.3);
+  border-color: rgba(var(--secondary-rgb), 0.5);
+}
+
+.navbar-center li a.active::after {
+  width: 80%;
+  left: 10%;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  text-decoration: none;
-  gap: 1rem;
-}
-
-.admin-section {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.admin-login-button,
-.admin-dashboard-button,
-.admin-logout-button {
-  background: transparent;
-  border: 1px solid var(--text-on-primary);
-  color: var(--text-on-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.admin-login-button:hover,
-.admin-dashboard-button:hover {
-  background-color: var(--text-on-primary);
-  color: var(--primary);
-}
-
-.admin-logout-button {
-  padding: 0.5rem;
-}
-
-.admin-logout-button:hover {
-  background-color: var(--error);
-  border-color: var(--error);
-}
-
-.nav-link-all-rooms {
-  text-decoration: none;
-  color: var(--text-on-primary);
-  margin-right: 1.5rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.nav-link-all-rooms:hover {
-  color: var(--secondary);
+  z-index: 2;
 }
 
 .theme-toggle {
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: var(--text-on-primary);
-  font-size: 1.25rem;
-  padding: 0.5rem;
+  font-size: 1.1rem;
+  padding: 0.6rem;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .theme-toggle:hover {
-  transform: rotate(15deg);
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(15deg) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle:active {
+  transform: rotate(15deg) scale(0.95);
 }
 
 .navbar-mobile-toggle {
   display: none;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: var(--text-on-primary);
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.6rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-mobile-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .navbar h1 {
     font-size: 1.2rem;
+  }
+  
+  .navbar-logo {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .navbar-left {
+    gap: 0.6rem;
   }
   
   .navbar-mobile-toggle {
@@ -169,14 +207,15 @@
     left: 0;
     width: 100%;
     flex-direction: column;
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 10;
     padding: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(var(--primary-rgb), 0.4);
     gap: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   .navbar-center.active {
@@ -187,15 +226,23 @@
   .navbar-center li {
     width: 100%;
     text-align: center;
+    margin: 0.2rem 0;
   }
   
   .navbar-center li a {
     display: block;
-    padding: 1rem;
+    padding: 0.8rem 1.5rem;
+    margin: 0 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
   }
   
   .navbar-center li a:hover {
-    background-color: var(--primary-dark);
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
   }
   
   .navbar-center li a::after {
@@ -204,19 +251,80 @@
   
   .navbar-right {
     margin-left: auto;
-    margin-right: 1rem;
+    margin-right: 0.8rem;
+  }
+  
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .navbar h1 {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-logo {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .navbar-left {
     gap: 0.5rem;
   }
-
-  .admin-section {
-    flex-direction: column;
-    gap: 0.5rem;
+  
+  .navbar-mobile-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
   }
+  
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+  }
+  
+  .navbar-center li a {
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .navbar-right {
+    margin-right: 0.5rem;
+  }
+}
 
-  .admin-login-button,
-  .admin-dashboard-button,
-  .admin-logout-button {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+@media (max-width: 320px) {
+  .navbar {
+    padding: 0.5rem 0.6rem;
+  }
+  
+  .navbar h1 {
+    font-size: 1rem;
+  }
+  
+  .navbar-logo {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .navbar-mobile-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+  }
+  
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 }

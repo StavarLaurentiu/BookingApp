@@ -15,7 +15,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
     name: room.name || room.roomName,
     type: room.type || room.roomType,
     hotel: room.hotel,
-    pricePerNight: room.pricePerNight,
+    pricePerNight: parseFloat(room.pricePerNight),
     currency: room.currency,
     maxOccupancy: room.maxOccupancy,
     description: room.description,
@@ -28,7 +28,13 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   // Calculate dynamic pricing using our utility function
   const calculateBookingDetails = () => {
     if (!selectedDateRange || !selectedDateRange.startDate) {
-      return { nights: 0, totalPrice: 0, pricePerNight: normalizedRoom.pricePerNight };
+      return { 
+        nights: 0, 
+        totalPrice: normalizedRoom.pricePerNight, 
+        pricePerNight: normalizedRoom.pricePerNight,
+        breakdown: null,
+        lengthDiscount: null 
+      };
     }
 
     return calculateDynamicPrice(
@@ -49,14 +55,16 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       { icon: <FaThermometerHalf />, name: "Climate Control" }
     ];
 
-    if (normalizedRoom.type === "double" || normalizedRoom.type === "Suite") {
+    const roomType = normalizedRoom.type.toLowerCase();
+    
+    if (roomType === "double" || roomType === "suite") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "King Size Bed" },
         { icon: <FaShower />, name: "Rainfall Shower" },
         { icon: <FaCoffee />, name: "Coffee Machine" }
       ];
-    } else if (normalizedRoom.type === "Luxury" || normalizedRoom.type === "luxury" || normalizedRoom.type === "deluxe") {
+    } else if (roomType === "luxury" || roomType === "deluxe") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "Super King Bed" },
@@ -164,7 +172,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       <div className="room-info">
         <h2>{normalizedRoom.name}</h2>
         <div className="hotel-info">
-          <FaHotel /> <span>{normalizedRoom.hotel || "Grand Plaza Hotel"}</span>
+          <FaHotel /> <span>{normalizedRoom.hotel || "Hotel"}</span>
         </div>
         
         <p>
@@ -181,20 +189,24 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         </div>
         
         <div className="price-container">
-          <span className="currency">{normalizedRoom.currency}</span>
+          <span className="currency">{normalizedRoom.currency} </span>
           <span className="price">{normalizedRoom.pricePerNight}</span>
-          <span className="per-night"> / night (base price)</span>
+          <span className="per-night"> / night</span>
         </div>
         
         {selectedDateRange && selectedDateRange.startDate && (
           <div className="booking-details">
             <p>
-              <strong>{nights} night{nights !== 1 ? 's' : ''}</strong> • Average rate: 
-              <strong> {normalizedRoom.currency} {pricePerNight}</strong> per night
+              <strong>{nights} night{nights !== 1 ? 's' : ''}</strong>
+              {nights > 0 && (
+                <>
+                  • Average rate: <strong> {normalizedRoom.currency} {pricePerNight.toFixed(2)}</strong> per night
+                </>
+              )}
             </p>
-            <p>Total: <strong>{normalizedRoom.currency} {totalPrice}</strong></p>
+            <p>Total: <strong>{normalizedRoom.currency} {totalPrice.toFixed(2)}</strong></p>
             
-            {breakdown && (
+            {breakdown && breakdown.length > 0 && (
               <>
                 <button 
                   className="price-breakdown-toggle" 
@@ -251,15 +263,13 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         <p className="description">{normalizedRoom.description}</p>
       </div>
       
-      {selectedDateRange && (
+      {selectedDateRange && selectedDateRange.startDate && (
         <div className="booking-action">
           <button
-            className="book-button"
+            className="book-room-button"
             onClick={handleOpenBookingPopup}
-            disabled={!selectedDateRange.startDate}
           >
-            <span className="text">Book Now</span>
-            <span className="price">{normalizedRoom.currency} {totalPrice}</span>
+            Book for {normalizedRoom.currency} {totalPrice.toFixed(2)}
           </button>
         </div>
       )}
