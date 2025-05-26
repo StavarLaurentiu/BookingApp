@@ -2,16 +2,81 @@
   padding: 1rem;
   text-align: center;
   color: var(--text-primary);
+  min-height: 60vh;
 }
 
 .all-rooms-container h2 {
   margin-bottom: 2rem;
   color: var(--text-primary);
+  font-size: 2rem;
 }
 
 .rooms-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .rooms-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .rooms-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1600px) {
+  .rooms-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.loading-message {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.error-message {
+  background-color: rgba(var(--error-rgb), 0.1);
+  color: var(--error);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.no-rooms-message {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .all-rooms-container {
+    padding: 0.5rem;
+  }
+  
+  .all-rooms-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .rooms-list {
+    gap: 1rem;
+  }
 }

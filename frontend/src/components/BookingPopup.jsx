@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import './BookingPopup.css';
-import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaCreditCard, FaPercent, FaSun, FaSnowflake } from 'react-icons/fa';
+import { FaTimes, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaCreditCard, FaPercent, FaSun, FaSnowflake, FaSpinner, FaCheckCircle } from 'react-icons/fa';
 import { calculateDynamicPrice } from '../utils/pricingUtils';
 
 const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
@@ -166,7 +166,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
   const popupContent = (
     <div className="booking-popup-overlay" onClick={handleOverlayClick}>
       <div className="booking-popup">
-        <button className="close-button" onClick={onClose}>
+        <button className="close-button" onClick={onClose} disabled={isSubmitting}>
           <FaTimes />
         </button>
         
@@ -260,15 +260,16 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="John Doe"
+              placeholder="Enter your full name"
               className={errors.name ? 'error' : ''}
+              disabled={isSubmitting}
             />
             {errors.name && <div className="error-message">{errors.name}</div>}
           </div>
           
           <div className="form-group">
             <label htmlFor="email">
-              <FaEnvelope /> Email
+              <FaEnvelope /> Email Address
             </label>
             <input
               type="email"
@@ -276,8 +277,9 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="john.doe@example.com"
+              placeholder="your.email@example.com"
               className={errors.email ? 'error' : ''}
+              disabled={isSubmitting}
             />
             {errors.email && <div className="error-message">{errors.email}</div>}
           </div>
@@ -294,19 +296,21 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
               onChange={handleChange}
               placeholder="+1 (123) 456-7890"
               className={errors.phone ? 'error' : ''}
+              disabled={isSubmitting}
             />
             {errors.phone && <div className="error-message">{errors.phone}</div>}
           </div>
           
           <div className="form-group">
-            <label htmlFor="specialRequests">Special Requests (optional)</label>
+            <label htmlFor="specialRequests">Special Requests (Optional)</label>
             <textarea
               id="specialRequests"
               name="specialRequests"
               value={formData.specialRequests}
               onChange={handleChange}
-              placeholder="Any special requirements?"
+              placeholder="Any special requirements or requests?"
               rows="3"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -322,6 +326,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
                   value="creditCard"
                   checked={formData.paymentMethod === 'creditCard'}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                 />
                 <span>Credit Card</span>
               </label>
@@ -332,6 +337,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
                   value="paypal"
                   checked={formData.paymentMethod === 'paypal'}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                 />
                 <span>PayPal</span>
               </label>
@@ -342,6 +348,7 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
                   value="payAtHotel"
                   checked={formData.paymentMethod === 'payAtHotel'}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                 />
                 <span>Pay at Hotel</span>
               </label>
@@ -349,7 +356,12 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
           </div>
           
           <div className="booking-actions">
-            <button type="button" className="cancel-button" onClick={onClose}>
+            <button 
+              type="button" 
+              className="cancel-button" 
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </button>
             <button 
@@ -357,7 +369,17 @@ const BookingPopup = ({ room, selectedDateRange, onClose, onConfirm }) => {
               className="confirm-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Processing...' : `Confirm Booking (${room.currency} ${totalPrice.toFixed(2)})`}
+              {isSubmitting ? (
+                <>
+                  <FaSpinner className="spinner" style={{animation: 'spin 1s linear infinite'}} />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <FaCheckCircle />
+                  Confirm Booking ({room.currency} {totalPrice.toFixed(2)})
+                </>
+              )}
             </button>
           </div>
         </form>

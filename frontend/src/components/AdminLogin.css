@@ -25,11 +25,12 @@
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(8px);
-  animation: fadeIn 0.3s ease;
+  animation: adminOverlayFadeIn 0.3s ease forwards;
   pointer-events: auto;
+  opacity: 0;
 }
 
-@keyframes fadeIn {
+@keyframes adminOverlayFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -42,11 +43,13 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   padding: 2rem;
   position: relative;
-  animation: slideUp 0.3s ease;
+  animation: adminModalSlideIn 0.3s ease forwards;
   border: 1px solid var(--divider);
+  transform: translateY(30px);
+  opacity: 0;
 }
 
-@keyframes slideUp {
+@keyframes adminModalSlideIn {
   from { 
     transform: translateY(30px);
     opacity: 0;
