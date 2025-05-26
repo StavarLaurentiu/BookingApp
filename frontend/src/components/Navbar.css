@@ -18,7 +18,7 @@
   align-items: center;
   gap: 1rem;
   text-decoration: none;
-  color: var(--navbar-text); /* Ensure text color matches navbar text */
+  color: var(--text-on-primary);
 }
 
 .navbar-logo {
@@ -111,10 +111,15 @@
 }
 
 .nav-link-all-rooms {
-  text-decoration: none; /* Remove underline */
-  color: var(--navbar-text); /* Set text color to white (or navbar variable) */
-  margin-right: 1.5rem; /* Increased margin to move it more to the left */
-  /* Add other styling as needed, e.g., padding, font-size */
+  text-decoration: none;
+  color: var(--text-on-primary);
+  margin-right: 1.5rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link-all-rooms:hover {
+  color: var(--secondary);
 }
 
 .theme-toggle {

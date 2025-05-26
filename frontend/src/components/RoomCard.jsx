@@ -9,14 +9,30 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
   const [showBookingPopup, setShowBookingPopup] = useState(false);
   const [showPricingDetails, setShowPricingDetails] = useState(false);
   
+  // Normalize room data to handle both old and new structures
+  const normalizedRoom = {
+    id: room.id || room.roomId,
+    name: room.name || room.roomName,
+    type: room.type || room.roomType,
+    hotel: room.hotel,
+    pricePerNight: room.pricePerNight,
+    currency: room.currency,
+    maxOccupancy: room.maxOccupancy,
+    description: room.description,
+    images: room.images || [],
+    // For backend integration
+    url: room.url,
+    bookings: room.bookings || []
+  };
+  
   // Calculate dynamic pricing using our utility function
   const calculateBookingDetails = () => {
     if (!selectedDateRange || !selectedDateRange.startDate) {
-      return { nights: 0, totalPrice: 0, pricePerNight: room.pricePerNight };
+      return { nights: 0, totalPrice: 0, pricePerNight: normalizedRoom.pricePerNight };
     }
 
     return calculateDynamicPrice(
-      room.pricePerNight,
+      normalizedRoom.pricePerNight,
       selectedDateRange.startDate,
       selectedDateRange.endDate || selectedDateRange.startDate
     );
@@ -33,14 +49,14 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       { icon: <FaThermometerHalf />, name: "Climate Control" }
     ];
 
-    if (room.type === "double") {
+    if (normalizedRoom.type === "double" || normalizedRoom.type === "Suite") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "King Size Bed" },
         { icon: <FaShower />, name: "Rainfall Shower" },
         { icon: <FaCoffee />, name: "Coffee Machine" }
       ];
-    } else if (room.type === "Luxury" || room.type === "luxury") {
+    } else if (normalizedRoom.type === "Luxury" || normalizedRoom.type === "luxury" || normalizedRoom.type === "deluxe") {
       return [
         ...baseFeatures,
         { icon: <FaBed />, name: "Super King Bed" },
@@ -55,38 +71,28 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
     }
   };
 
-  // Handle opening the booking popup
   const handleOpenBookingPopup = (e) => {
-    // Prevent any potential event bubbling
     e.stopPropagation();
     setShowBookingPopup(true);
   };
   
-  // Handle closing the booking popup
   const handleCloseBookingPopup = () => {
     setShowBookingPopup(false);
   };
   
-  // Handle confirming the booking
   const handleConfirmBooking = async (bookingData) => {
     const baseURL = "http://127.0.0.1:8000";
     
     try {
-      // Create date range from the booking data
-      const startDate = new Date(bookingData.dateRange.startDate);
-      const endDate = new Date(bookingData.dateRange.endDate);
-      
-      // For this example, we'll just simulate a successful booking
-      // In a real app, this would be an API call
       console.log("Booking data:", bookingData);
 
-      const customerPayload = { // Renamed to avoid confusion with the response 'data'
+      const customerPayload = {
         name: bookingData.name,
         email: bookingData.email,
         phone_number: bookingData.phone,
       };
 
-      const customerResponse = await fetch(`${baseURL}/customers/`, { // Renamed response variable
+      const customerResponse = await fetch(`${baseURL}/customers/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -95,15 +101,14 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         });
         
       if (!customerResponse.ok) {
-        const errorData = await customerResponse.json(); // Attempt to get error details
+        const errorData = await customerResponse.json();
         console.error("New customer creation failed:", errorData);
         throw new Error(`New customer failed: ${errorData.detail || customerResponse.statusText}`);
       }
 
-      const newCustomerData = await customerResponse.json(); // Renamed to be more specific
+      const newCustomerData = await customerResponse.json();
       console.log("Customer response:", newCustomerData);
 
-      // Ensure newCustomerData has the URL. Adjust 'newCustomerData.url' if your backend returns it differently.
       if (!newCustomerData || !newCustomerData.url) {
         console.error("Customer URL not found in response:", newCustomerData);
         throw new Error("Failed to retrieve customer URL after creation.");
@@ -111,7 +116,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
 
       const finalBookingData = {
         customer: newCustomerData.url,
-        room: bookingData.room.url,
+        room: normalizedRoom.url,
         check_in_date: (() => {
           const [m, d, y] = bookingData.dateRange.startDate.split('/');
           return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
@@ -126,54 +131,48 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
 
       console.log("transformed: ", finalBookingData)
       
-      // Create the booking
-      if (startDate <= endDate) {
-        const response = await fetch(`${baseURL}/bookings/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(finalBookingData),
-        });
-        
-        if (!response.ok) {
-          throw new Error("Booking failed");
-        }
-
-        const data = await response.json();
-        console.log("Booking response:", data);
-      }
+      const response = await fetch(`${baseURL}/bookings/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(finalBookingData),
+      });
       
-      // Close popup and notify success
+      if (!response.ok) {
+        throw new Error("Booking failed");
+      }
+
+      const data = await response.json();
+      console.log("Booking response:", data);
+      
       setShowBookingPopup(false);
       
-      // Call the parent component's success handler
       if (onBookingSuccess) {
         onBookingSuccess();
       }
       
-      console.log("Booking successful for all selected dates with guest info:", bookingData);
+      console.log("Booking successful with guest info:", bookingData);
     } catch (error) {
       console.error("Error during booking:", error);
-      // Here you could show an error message to the user
     }
   };
 
   return (
     <div className="room-card">
-      <RoomImageSlider images={room.images} />
+      <RoomImageSlider images={normalizedRoom.images} />
       <div className="room-info">
-        <h2>{room.name}</h2>
+        <h2>{normalizedRoom.name}</h2>
         <div className="hotel-info">
-          <FaHotel /> <span>{room.hotel || "Grand Plaza Hotel"}</span>
+          <FaHotel /> <span>{normalizedRoom.hotel || "Grand Plaza Hotel"}</span>
         </div>
         
         <p>
-          <strong>Type:</strong> {room.type}
+          <strong>Type:</strong> {normalizedRoom.type}
         </p>
         
         <div className="room-features">
-          <span className="feature-tag"><FaUsers /> {room.maxOccupancy} Guests</span>
+          <span className="feature-tag"><FaUsers /> {normalizedRoom.maxOccupancy} Guests</span>
           {getRoomFeatures().map((feature, index) => (
             <span key={index} className="feature-tag">
               {feature.icon} {feature.name}
@@ -182,8 +181,8 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
         </div>
         
         <div className="price-container">
-          <span className="currency">{room.currency}</span>
-          <span className="price">{room.pricePerNight}</span>
+          <span className="currency">{normalizedRoom.currency}</span>
+          <span className="price">{normalizedRoom.pricePerNight}</span>
           <span className="per-night"> / night (base price)</span>
         </div>
         
@@ -191,63 +190,65 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
           <div className="booking-details">
             <p>
               <strong>{nights} night{nights !== 1 ? 's' : ''}</strong> • Average rate: 
-              <strong> {room.currency} {pricePerNight}</strong> per night
+              <strong> {normalizedRoom.currency} {pricePerNight}</strong> per night
             </p>
-            <p>Total: <strong>{room.currency} {totalPrice}</strong></p>
+            <p>Total: <strong>{normalizedRoom.currency} {totalPrice}</strong></p>
             
-            {/* Toggle button to show/hide price breakdown */}
-            <button 
-              className="price-breakdown-toggle" 
-              onClick={(e) => {
-                e.preventDefault();
-                setShowPricingDetails(!showPricingDetails);
-              }}
-            >
-              {showPricingDetails ? 'Hide price details' : 'Show price details'}
-            </button>
-            
-            {/* Price breakdown details */}
-            {showPricingDetails && (
-              <div className="price-breakdown">
-                <h4>Price Breakdown</h4>
-                <ul className="breakdown-list">
-                  {breakdown.map((day, index) => (
-                    <li key={index} className="breakdown-item">
-                      <span className="breakdown-date">{day.date}:</span>
-                      <span className="breakdown-price">{room.currency} {day.price.toFixed(2)}</span>
-                      {day.adjustments.length > 0 && (
-                        <div className="adjustment-factors">
-                          {day.adjustments.includes('weekend') && (
-                            <span className="factor weekend"><FaCalendarAlt /> Weekend rate</span>
-                          )}
-                          {day.adjustments.includes('summer') && (
-                            <span className="factor seasonal"><FaSun /> Summer season</span>
-                          )}
-                          {day.adjustments.includes('winter') && (
-                            <span className="factor seasonal"><FaSnowflake /> Winter holiday</span>
-                          )}
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+            {breakdown && (
+              <>
+                <button 
+                  className="price-breakdown-toggle" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPricingDetails(!showPricingDetails);
+                  }}
+                >
+                  {showPricingDetails ? 'Hide price details' : 'Show price details'}
+                </button>
                 
-                {lengthDiscount && (
-                  <div className="length-discount">
-                    <FaPercent /> <strong>{lengthDiscount.rate}% discount</strong> for {nights} night stay
-                    <span className="discount-amount">-{room.currency} {lengthDiscount.amount.toFixed(2)}</span>
+                {showPricingDetails && (
+                  <div className="price-breakdown">
+                    <h4>Price Breakdown</h4>
+                    <ul className="breakdown-list">
+                      {breakdown.map((day, index) => (
+                        <li key={index} className="breakdown-item">
+                          <span className="breakdown-date">{day.date}:</span>
+                          <span className="breakdown-price">{normalizedRoom.currency} {day.price.toFixed(2)}</span>
+                          {day.adjustments.length > 0 && (
+                            <div className="adjustment-factors">
+                              {day.adjustments.includes('weekend') && (
+                                <span className="factor weekend"><FaCalendarAlt /> Weekend rate</span>
+                              )}
+                              {day.adjustments.includes('summer') && (
+                                <span className="factor seasonal"><FaSun /> Summer season</span>
+                              )}
+                              {day.adjustments.includes('winter') && (
+                                <span className="factor seasonal"><FaSnowflake /> Winter holiday</span>
+                              )}
+                            </div>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {lengthDiscount && (
+                      <div className="length-discount">
+                        <FaPercent /> <strong>{lengthDiscount.rate}% discount</strong> for {nights} night stay
+                        <span className="discount-amount">-{normalizedRoom.currency} {lengthDiscount.amount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    
+                    <div className="total-price">
+                      <strong>Total Price: {normalizedRoom.currency} {totalPrice.toFixed(2)}</strong>
+                    </div>
                   </div>
                 )}
-                
-                <div className="total-price">
-                  <strong>Total Price: {room.currency} {totalPrice.toFixed(2)}</strong>
-                </div>
-              </div>
+              </>
             )}
           </div>
         )}
         
-        <p className="description">{room.description}</p>
+        <p className="description">{normalizedRoom.description}</p>
       </div>
       
       {selectedDateRange && (
@@ -258,15 +259,14 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
             disabled={!selectedDateRange.startDate}
           >
             <span className="text">Book Now</span>
-            <span className="price">{room.currency} {totalPrice}</span>
+            <span className="price">{normalizedRoom.currency} {totalPrice}</span>
           </button>
         </div>
       )}
       
-      {/* BookingPopup using React Portal to avoid DOM hierarchy issues */}
       {showBookingPopup && (
         <BookingPopup
-          room={{...room, dynamicPricing: pricingDetails}}
+          room={{...normalizedRoom, dynamicPricing: pricingDetails}}
           selectedDateRange={selectedDateRange}
           onClose={handleCloseBookingPopup}
           onConfirm={handleConfirmBooking}
